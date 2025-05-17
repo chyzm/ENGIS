@@ -261,28 +261,34 @@
   <!-- Main Content -->
   <main class="pt-16">
 
-    <!-- Hero Section with Carousel -->
-    <section class="relative overflow-hidden h-[90vh] min-h-[600px]">
-      <!-- Carousel container -->
-      <div class="relative h-full">
-        <!-- Slide 1 -->
-        <div class="absolute inset-0 transition-opacity duration-1000 opacity-100">
-          <div class="parallax bg-[url('img/hero.webp')] bg-cover bg-center absolute inset-0"></div>
-          <div class="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-dark-700/80 z-10"></div>
-        </div>
-        
-        <!-- Slide 2 -->
-        <div class="absolute inset-0 transition-opacity duration-1000 opacity-0">
-          <div class="parallax bg-[url('/img/enugustate-img.jpg')] bg-cover bg-center absolute inset-0"></div>
-          <div class="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-dark-700/80 z-10"></div>
-        </div>
-        
-        <!-- Slide 3 -->
-        <div class="absolute inset-0 transition-opacity duration-1000 opacity-0">
-          <div class="parallax bg-[url('/img/hero3.jpg')] bg-cover bg-center absolute inset-0"></div>
-          <div class="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-dark-700/80 z-10"></div>
-        </div>
-      </div>
+    <!-- Hero Section with Carousel - Using HTML Paths -->
+<section class="relative overflow-hidden h-[90vh] min-h-[600px]">
+  <!-- Carousel container -->
+  <div class="relative h-full w-full">
+    <!-- Slide 1 -->
+    <div class="absolute inset-0 transition-opacity duration-1000 opacity-100">
+      <img src="/img/hero.webp" 
+           alt="ENGIS Land Services"
+           class="w-full h-full object-cover object-center parallax">
+      <div class="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-dark-700/80 z-10"></div>
+    </div>
+    
+    <!-- Slide 2 -->
+    <div class="absolute inset-0 transition-opacity duration-1000 opacity-0">
+      <img src="/img/enugustate-img.jpg" 
+           alt="Enugu State"
+           class="w-full h-full object-cover object-center parallax">
+      <div class="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-dark-700/80 z-10"></div>
+    </div>
+    
+    <!-- Slide 3 -->
+    <div class="absolute inset-0 transition-opacity duration-1000 opacity-0">
+      <img src="/img/hero3.jpg" 
+           alt="Land Management"
+           class="w-full h-full object-cover object-center parallax">
+      <div class="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-dark-700/80 z-10"></div>
+    </div>
+  </div>
     
       <!-- Carousel indicators (now placed above the text) -->
       <div class="absolute bottom-1 left-1/2 transform -translate-x-1/2 z-30 flex space-x-2">
