@@ -385,35 +385,7 @@
             Learn More
           </button>
         </div>
-        
-        <script>
-          document.addEventListener('DOMContentLoaded', function() {
-            const thumb = document.getElementById('video-thumbnail');
-            const video = document.getElementById('featured-video');
-            const playButton = thumb.querySelector('div');
-            
-            // Click handler for play button
-            function playVideo() {
-              thumb.style.opacity = '0';
-              video.style.opacity = '1';
-              video.play().catch(err => {
-                console.warn('Autoplay failed:', err);
-                video.controls = true;
-              });
-            }
-            
-            // Add click event
-            thumb.addEventListener('click', playVideo);
-            
-            // Try autoplay with fallback
-            setTimeout(() => {
-              const isHalfVisible = thumb.getBoundingClientRect().top < window.innerHeight / 2;
-              if (isHalfVisible) {
-                playVideo();
-              }
-            }, 1000);
-          });
-        </script>
+
      </div>
 
 
