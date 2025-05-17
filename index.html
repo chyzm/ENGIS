@@ -327,31 +327,35 @@
 
     <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-8 lg:gap-12 bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300" style="max-width: 900px; margin-top: 50px; margin-bottom: 50px; ">
    
-        <!-- Video Section (Left) -->
-        <div class="relative w-full lg:w-3/5 h-80 lg:h-96 rounded-xl overflow-hidden shadow-lg group">
-          <!-- Thumbnail with animated play button -->
-          <div id="video-thumbnail"
-               class="absolute inset-0 bg-center bg-cover bg-no-repeat z-20 transition-opacity duration-500"
-               style="background-image: url({% static 'img/engis_logo.png' %});">
-            <div class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300 flex justify-center items-center">
-              <div class="w-20 h-20 bg-green-600 rounded-full flex justify-center items-center text-white text-4xl select-none transform group-hover:scale-110 transition-transform duration-300 shadow-xl hover:shadow-2xl cursor-pointer">
-                <span class="relative left-1">▶</span>
-              </div>
-            </div>
-          </div>
-        
-          <!-- Video with fade-in effect -->
-          <video id="featured-video"
-                 class="w-full h-full object-cover opacity-0 transition-opacity duration-500"
-                 controls
-                 preload="metadata"
-                 muted
-                 playsinline
-                 poster="{% static 'img/engis_logo.png' %}">
-            <source src="/vid/ENGIS-1.mp4" type="video/mp4">
-            Your browser does not support HTML5 video.
-          </video>
-        </div>
+        <!-- Improved Video Section with Mobile Support -->
+<div class="relative w-full lg:w-3/5 h-80 lg:h-96 rounded-xl overflow-hidden shadow-lg group">
+  <!-- Thumbnail with animated play button -->
+  <div id="video-thumbnail"
+       class="absolute inset-0 bg-center bg-cover bg-no-repeat z-20 transition-opacity duration-500 cursor-pointer"
+       style="background-image: url('/img/engis_logo.png');">
+    <div class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300 flex justify-center items-center">
+      <div class="w-20 h-20 bg-green-600 rounded-full flex justify-center items-center text-white text-4xl select-none transform group-hover:scale-110 transition-transform duration-300 shadow-xl hover:shadow-2xl">
+        <span class="relative left-1">▶</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Video with improved mobile support -->
+  <video id="featured-video"
+         class="w-full h-full object-cover opacity-0 transition-opacity duration-500"
+         controls
+         preload="auto"
+         playsinline
+         webkit-playsinline
+         x-webkit-airplay="allow"
+         poster="/img/engis_logo.png">
+    <source src="/vid/ENGIS-1.mp4" type="video/mp4">
+    <source src="/vid/ENGIS-1.webm" type="video/webm">
+    Your browser does not support HTML5 video.
+  </video>
+</div>
+
+
         
         <!-- Content Section (Right) -->
         <div class="w-full lg:w-2/5 space-y-4 py-4 lg:py-0">
@@ -1485,6 +1489,55 @@
           interval = setInterval(nextSlide, 5000);
         });
       });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const thumb = document.getElementById('video-thumbnail');
+      const video = document.getElementById('featured-video');
+      
+      // Click handler for play button
+      function playVideo() {
+        thumb.style.opacity = '0';
+        thumb.style.pointerEvents = 'none';
+        video.style.opacity = '1';
+        
+        // Unmute and play (mobile requires user gesture)
+        video.muted = false;
+        const playPromise = video.play();
+        
+        // Handle any errors
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            // Show controls if autoplay fails
+            video.controls = true;
+            video.muted = true;
+            video.play();
+          });
+        }
+      }
+      
+      // Add click event
+      thumb.addEventListener('click', playVideo);
+      thumb.addEventListener('touchend', playVideo); // For mobile touch
+      
+      // Fallback for mobile browsers
+      video.addEventListener('play', function() {
+        video.controls = true;
+      });
+      
+      // Try autoplay when visible (desktop)
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          video.muted = true;
+          video.play().catch(() => {
+            // If autoplay fails, ensure controls are visible
+            video.controls = true;
+          });
+        }
+      }, { threshold: 0.5 });
+      
+      observer.observe(video);
+    });
   </script>
 </body>
 </html>
