@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
+  <title>{% block title %}ENGIS - Modern Land Management{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            },
+            secondary: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+            },
+            accent: '#10b981',
+            dark: '#1e293b',
+            light: '#f8fafc',
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-in-out',
+            'slide-up': 'slideUp 0.6s ease-out',
+            'pulse-slow': 'pulse 3s infinite',
+            'float': 'float 6s ease-in-out infinite',
+            'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+            'scale-in': 'scaleIn 0.5s ease-out forwards',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            },
+            fadeInUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            },
+            scaleIn: {
+              '0%': { transform: 'scale(0.95)', opacity: '0' },
+              '100%': { transform: 'scale(1)', opacity: '1' },
+            }
+          },
+          boxShadow: {
+            'soft': '0 10px 30px -15px rgba(0, 0, 0, 0.1)',
+            'hard': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .gradient-text {
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      background-image: linear-gradient(90deg, #22c55e, #10b981);
+    }
+    .parallax {
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+    .service-card:hover .service-icon {
+      transform: rotateY(180deg) scale(1.1);
+    }
+    .hover-zoom {
+      transition: transform 0.3s ease;
+    }
+    .hover-zoom:hover {
+      transform: scale(1.03);
+    }
+
+  /* Animation for floating elements */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  .animation-delay-100 { animation-delay: 0.1s; }
+  .animation-delay-300 { animation-delay: 0.3s; }
+  .animation-delay-500 { animation-delay: 0.5s; }
+
+/* Value proposition*/
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .animate-bounce {
+    animation: bounce 2s infinite;
+  }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans antialiased text-slate-800">
+  <!-- Navigation -->
+  <header class="fixed top-0 left-0 w-full bg-white/90 backdrop-blur-md shadow-sm py-3 z-50 transition-all duration-300">
+    <div class="container mx-auto flex justify-between items-center px-4 sm:px-6">
+      <!-- Logo -->
+      <a href="#" class="flex items-center space-x-2 group">
+        <img src="/img/engis_logo.png" class="h-9 transition-all duration-300 group-hover:scale-110" alt="ENGIS Logo">
+        <span class="text-xl font-bold bg-gradient-to-r from-primary-600 to-accent gradient-text">ENGIS</span>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden lg:flex items-center space-x-1">
+        <a href="#" class="px-4 py-2 text-sm font-medium rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors">Home</a>
+        
+        <!-- Services Dropdown -->
+        <div class="relative group">
+          <button class="flex items-center px-4 py-2 text-sm font-medium rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors">
+            <span>Services</span>
+            <svg class="w-4 h-4 ml-1 transition-transform group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div class="absolute left-0 mt-2 w-64 bg-white rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-1 group-hover:translate-y-0 z-50">
+            <div class="p-2 space-y-1">
+              <a href="#" class="block px-4 py-3 text-sm rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors flex items-center">
+                <i class="fas fa-search mr-3 text-primary-500"></i>
+                <span>Search Report</span>
+              </a>
+              <a href="#" class="block px-4 py-3 text-sm rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors flex items-center">
+                <i class="fas fa-file-invoice-dollar mr-3 text-primary-500"></i>
+                <span>Ground Rent Bill</span>
+              </a>
+              <a href="#" class="block px-4 py-3 text-sm rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors flex items-center">
+                <i class="fas fa-file-signature mr-3 text-primary-500"></i>
+                <span>Fresh Registration</span>
+              </a>
+              <a href="#" class="block px-4 py-3 text-sm rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors flex items-center">
+                <i class="fas fa-sync-alt mr-3 text-primary-500"></i>
+                <span>Recertification</span>
+              </a>
+              <a href="#" class="block px-4 py-3 text-sm rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors flex items-center">
+                <i class="fas fa-check-circle mr-3 text-primary-500"></i>
+                <span>Regularization</span>
+              </a>
+              <a href="#" class="block px-4 py-3 text-sm rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors flex items-center">
+                <i class="fas fa-project-diagram mr-3 text-primary-500"></i>
+                <span>Estate Unbundling</span>
+              </a>
+              <a href="#" class="block px-4 py-3 text-sm rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors flex items-center">
+                <i class="fas fa-share-square mr-3 text-primary-500"></i>
+                <span>Partial Surrender</span>
+              </a>
+              <a href="#" class="block px-4 py-3 text-sm rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors flex items-center">
+                <i class="fas fa-map-marked-alt mr-3 text-primary-500"></i>
+                <span>Land Allocation</span>
+              </a>
+              <a href="#" class="block px-4 py-3 text-sm rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors flex items-center">
+                <i class="fas fa-eye mr-3 text-primary-500"></i>
+                <span>Property Monitoring</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <a href="https://staging-payment.enugugis.online/" class="px-4 py-2 text-sm font-medium rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors">Payments</a>
+        <a href="{% url 'homepage' %}" class="px-4 py-2 text-sm font-medium rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors">Survey</a>
+        <a href="#" class="px-4 py-2 text-sm font-medium rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors">History</a>
+        <a href="#" class="px-4 py-2 text-sm font-medium rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors">Maps</a>
+        <a href="https://staging.enugugis.online/faqs" class="px-4 py-2 text-sm font-medium rounded-lg hover:bg-primary-50 hover:text-primary-700 transition-colors">FAQs</a>
+      </nav>
+
+      <!-- CTA Buttons -->
+      <div class="hidden lg:flex items-center space-x-3">
+        <a href="{% url 'register' %}" class="px-4 py-2 text-sm font-medium rounded-lg bg-gradient-to-r from-primary-600 to-accent text-white shadow-md hover:shadow-lg transition-all duration-300 hover:from-primary-700 hover:to-accent-600">
+          Create Account
+        </a>
+        <a href="{% url 'homepage' %}" class="px-4 py-2 text-sm font-medium rounded-lg border border-primary-500 text-primary-600 hover:bg-primary-50 transition-colors flex items-center">
+          <i class="fas fa-user-circle mr-2"></i>
+          Log in
+        </a>
+      </div>
+
+      <!-- Mobile Menu Toggle -->
+      <button id="mobile-menu-toggle" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none">
+        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t border-gray-200 px-6 py-4 shadow-lg">
+      <div class="space-y-4">
+        <a href="#" class="block py-2 font-medium">Home</a>
+        
+        <!-- Mobile Services Dropdown -->
+        <div>
+          <button id="mobile-services-toggle" class="w-full flex justify-between items-center py-2 font-medium">
+            <span>Services</span>
+            <svg id="mobile-services-icon" class="w-4 h-4 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <div id="mobile-services-menu" class="hidden pl-4 mt-2 space-y-2 border-l-2 border-primary-200">
+            <a href="#" class="block py-2 text-sm">Search Report</a>
+            <a href="#" class="block py-2 text-sm">Ground Rent Bill</a>
+            <a href="#" class="block py-2 text-sm">Fresh Registration</a>
+            <a href="#" class="block py-2 text-sm">Recertification</a>
+            <a href="#" class="block py-2 text-sm">Regularization</a>
+            <a href="#" class="block py-2 text-sm">Estate Unbundling</a>
+            <a href="#" class="block py-2 text-sm">Partial Surrender</a>
+            <a href="#" class="block py-2 text-sm">Land Allocation</a>
+            <a href="#" class="block py-2 text-sm">Property Monitoring</a>
+          </div>
+        </div>
+
+        <a href="https://staging-payment.enugugis.online/" class="block py-2 font-medium">Payments</a>
+        <a href="{% url 'homepage' %}" class="block py-2 font-medium">Survey</a>
+        <a href="#" class="block py-2 font-medium">History</a>
+        <a href="#" class="block py-2 font-medium">Maps</a>
+        <a href="https://staging.enugugis.online/faqs" class="block py-2 font-medium">FAQs</a>
+        
+        <div class="pt-4 space-y-3 border-t border-gray-200">
+          <a href="{% url 'register' %}" class="block w-full text-center py-2 font-medium rounded-lg bg-gradient-to-r from-primary-600 to-accent text-white shadow-md">
+            Create Account
+          </a>
+          <a href="{% url 'homepage' %}" class="block w-full text-center py-2 font-medium rounded-lg border border-primary-500 text-primary-600">
+            Log in
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="pt-16">
+
+    <!-- Hero Section with Carousel -->
+    <section class="relative overflow-hidden h-[90vh] min-h-[600px]">
+      <!-- Carousel container -->
+      <div class="relative h-full">
+        <!-- Slide 1 -->
+        <div class="absolute inset-0 transition-opacity duration-1000 opacity-100">
+          <div class="parallax bg-[url('/img/hero.webp')] bg-cover bg-center absolute inset-0"></div>
+          <div class="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-dark-700/80 z-10"></div>
+        </div>
+        
+        <!-- Slide 2 -->
+        <div class="absolute inset-0 transition-opacity duration-1000 opacity-0">
+          <div class="parallax bg-[url('/img/enugustate-img.jpg')] bg-cover bg-center absolute inset-0"></div>
+          <div class="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-dark-700/80 z-10"></div>
+        </div>
+        
+        <!-- Slide 3 -->
+        <div class="absolute inset-0 transition-opacity duration-1000 opacity-0">
+          <div class="parallax bg-[url('/img/hero3.jpg')] bg-cover bg-center absolute inset-0"></div>
+          <div class="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-dark-700/80 z-10"></div>
+        </div>
+      </div>
+    
+      <!-- Carousel indicators (now placed above the text) -->
+      <div class="absolute bottom-1 left-1/2 transform -translate-x-1/2 z-30 flex space-x-2">
+        <button class="carousel-indicator w-3 h-3 rounded-full bg-yellow-300" aria-label="Slide 1"></button>
+        <button class="carousel-indicator w-3 h-3 rounded-full bg-yellow-300/50" aria-label="Slide 2"></button>
+        <button class="carousel-indicator w-3 h-3 rounded-full bg-yellow-300/50" aria-label="Slide 3"></button>
+      </div>
+      
+      <!-- Text overlay with green background -->
+      <div class="absolute bottom-0 left-0 right-0 bg-green-800 z-20 py-8 px-4 sm:px-6">
+        <div class="container mx-auto max-w-4xl">
+          <div class="text-center">
+            <h1 class="text-3xl md:text-4xl font-extrabold leading-tight text-white">
+              Redefining Land Administration <span class="text-yellow-400">Excellence</span>
+            </h1>
+            <p class="text-sm mt-4 text-white/80">
+              At ENGIS, we exist to solve what was once considered impossible. We focus on what matters most in land administration: security of ownership, accuracy of records, transparency of processes, and speed of service. <span class="text-yellow-400">TOMORROW IS HERE.</span>
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mt-6">
+              <a href="{% url 'register' %}" class="px-6 py-3 bg-yellow-400 text-green-900 font-medium rounded-lg shadow-md hover:shadow-lg transition-all hover:bg-yellow-300 text-center">
+                Get Started
+              </a>
+              <a href="#services" class="px-6 py-3 border-2 border-yellow-300 text-yellow-300 font-medium rounded-lg hover:bg-yellow-300/10 transition-colors text-center">
+                Explore Services
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Floating elements -->
+      <div class="absolute top-20 left-10 w-16 h-16 rounded-full bg-yellow-300/20 animate-float animation-delay-100 hidden lg:block"></div>
+      <div class="absolute top-1/4 right-20 w-24 h-24 rounded-full bg-white/20 animate-float animation-delay-300 hidden lg:block"></div>
+      <div class="absolute bottom-1/2 right-1/4 w-20 h-20 rounded-full bg-green-500/20 animate-float animation-delay-500 hidden lg:block"></div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-8 lg:gap-12 bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300" style="max-width: 900px; margin-top: 50px; margin-bottom: 50px; ">
+   
+        <!-- Video Section (Left) -->
+        <div class="relative w-full lg:w-3/5 h-80 lg:h-96 rounded-xl overflow-hidden shadow-lg group">
+          <!-- Thumbnail with animated play button -->
+          <div id="video-thumbnail"
+               class="absolute inset-0 bg-center bg-cover bg-no-repeat z-20 transition-opacity duration-500"
+               style="background-image: url({% static 'img/engis_logo.png' %});">
+            <div class="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300 flex justify-center items-center">
+              <div class="w-20 h-20 bg-green-600 rounded-full flex justify-center items-center text-white text-4xl select-none transform group-hover:scale-110 transition-transform duration-300 shadow-xl hover:shadow-2xl cursor-pointer">
+                <span class="relative left-1">▶</span>
+              </div>
+            </div>
+          </div>
+        
+          <!-- Video with fade-in effect -->
+          <video id="featured-video"
+                 class="w-full h-full object-cover opacity-0 transition-opacity duration-500"
+                 controls
+                 preload="metadata"
+                 muted
+                 playsinline
+                 poster="{% static 'img/engis_logo.png' %}">
+            <source src="/vid/ENGIS-1.mp4" type="video/mp4">
+            Your browser does not support HTML5 video.
+          </video>
+        </div>
+        
+        <!-- Content Section (Right) -->
+        <div class="w-full lg:w-2/5 space-y-4 py-4 lg:py-0">
+          <h3 class="text-2xl font-bold text-gray-800">Discover ENGIS</h3>
+          <p class="text-gray-600 leading-relaxed">
+            Experience the future of land administration with our cutting-edge platform designed for efficiency and transparency.
+          </p>
+          <div class="flex items-center space-x-2 text-green-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span class="text-sm font-medium">Secure land records</span>
+          </div>
+          <div class="flex items-center space-x-2 text-green-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span class="text-sm font-medium">Transparent processes</span>
+          </div>
+          <div class="flex items-center space-x-2 text-green-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span class="text-sm font-medium">Instant verification</span>
+          </div>
+          <button class="mt-4 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg">
+            Learn More
+          </button>
+        </div>
+        
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            const thumb = document.getElementById('video-thumbnail');
+            const video = document.getElementById('featured-video');
+            const playButton = thumb.querySelector('div');
+            
+            // Click handler for play button
+            function playVideo() {
+              thumb.style.opacity = '0';
+              video.style.opacity = '1';
+              video.play().catch(err => {
+                console.warn('Autoplay failed:', err);
+                video.controls = true;
+              });
+            }
+            
+            // Add click event
+            thumb.addEventListener('click', playVideo);
+            
+            // Try autoplay with fallback
+            setTimeout(() => {
+              const isHalfVisible = thumb.getBoundingClientRect().top < window.innerHeight / 2;
+              if (isHalfVisible) {
+                playVideo();
+              }
+            }, 1000);
+          });
+        </script>
+     </div>
+
+
+    <!-- Trust Badges -->
+    <section class="py-12 bg-white">
+      <div class="container mx-auto px-4 sm:px-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-center">
+          <div class="flex flex-col items-center opacity-0 animate-fade-in-up" style="animation-delay: 0.2s">
+            <div class="text-4xl font-bold text-primary-600 mb-2">10K+</div>
+            <div class="text-sm text-gray-500">Properties Registered</div>
+          </div>
+          <div class="flex flex-col items-center opacity-0 animate-fade-in-up" style="animation-delay: 0.4s">
+            <div class="text-4xl font-bold text-primary-600 mb-2">24/7</div>
+            <div class="text-sm text-gray-500">Support Available</div>
+          </div>
+          <div class="flex flex-col items-center opacity-0 animate-fade-in-up" style="animation-delay: 0.6s">
+            <div class="text-4xl font-bold text-primary-600 mb-2">95%</div>
+            <div class="text-sm text-gray-500">Satisfaction Rate</div>
+          </div>
+          <div class="flex flex-col items-center opacity-0 animate-fade-in-up" style="animation-delay: 0.8s">
+            <div class="text-4xl font-bold text-primary-600 mb-2">5x</div>
+            <div class="text-sm text-gray-500">Faster Processing</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <!-- Services Section -->
+    <section class="bg-primary-600 py-20 text-white text-center">
+      <h1 class="text-4xl font-bold mb-4">Welcome to Our Land Services Platform</h1>
+      <p class="text-lg">Simplifying Land Administration and Ownership</p>
+    </section>
+
+    <!-- Value Proposition -->
+<section class="bg-gradient-to-b from-gray-50 to-gray-100 py-16 px-6">
+    <div class="max-w-5xl mx-auto">
+      <!-- Decorative elements -->
+      <div class="relative">
+        <div class="absolute -top-8 -left-8 w-24 h-24 rounded-full bg-green-100/50 blur-xl"></div>
+        <div class="absolute -bottom-8 -right-8 w-32 h-32 rounded-full bg-green-200/30 blur-xl"></div>
+        
+        <div class="relative bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm p-8 border border-gray-200/60">
+          <!-- Header with animated checkmarks -->
+          <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-6">
+            <!-- First Row (always horizontal on sm+, vertical on small screens) -->
+            <div class="flex flex-row flex-wrap justify-center gap-4 sm:gap-6">
+              <div class="flex items-center gap-2 animate-bounce" style="animation-delay: 0.1s">
+                <span class="text-2xl text-green-600">✓</span>
+                <span class="text-2xl font-bold text-green-700">FAST</span>
+              </div>
+              <div class="flex items-center gap-2 animate-bounce" style="animation-delay: 0.2s">
+                <span class="text-2xl text-green-600">✓</span>
+                <span class="text-2xl font-bold text-green-700">SECURE</span>
+              </div>
+            </div>
+            
+            <!-- Second Row (centered beneath on small screens, inline on larger) -->
+            <div class="flex justify-center animate-bounce" style="animation-delay: 0.3s">
+              <div class="flex items-center gap-2">
+                <span class="text-2xl text-green-600">✓</span>
+                <span class="text-2xl font-bold text-green-700">VERIFIED</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Main content Value proposition-->
+          <p class="text-lg text-gray-700 leading-relaxed tracking-wide max-w-3xl mx-auto">
+            Our groundbreaking system guarantees that 
+            <span class="font-semibold text-gray-900 bg-green-50 px-1.5 py-0.5 rounded">verified lands</span> 
+            are processed and delivered within just 
+            <span class="relative inline-block">
+              <span class="text-green-700 font-bold">8 to 24 hours</span>
+              <span class="absolute -bottom-1 left-0 w-full h-1 bg-green-300/50 rounded-full"></span>
+            </span>. 
+            By integrating advanced 
+            <span class="italic text-gray-800 border-b-2 border-green-200/60 pb-0.5">geospatial intelligence</span>, 
+            <span class="italic text-gray-800 border-b-2 border-green-200/60 pb-0.5">holographic security</span>, 
+            and 
+            <span class="italic text-gray-800 border-b-2 border-green-200/60 pb-0.5">anti-counterfeit features</span>, 
+            <span class="font-bold text-gray-900 relative">
+              <span class="z-10 relative">ENGIS</span>
+              <span class="absolute -bottom-0.5 left-0 w-full h-2 bg-green-300/30 z-0"></span>
+            </span> 
+            sets a new benchmark for trust, efficiency, and accountability in land governance.
+          </p>
+          
+   <!-- Responsive Stats Counter -->
+<div class="mt-10 grid grid-cols-3 gap-2 sm:gap-4 text-center">
+    <div class="p-2 sm:p-4 bg-green-50/50 rounded-lg border border-green-100">
+      <div class="text-xl sm:text-3xl font-bold text-green-700 mb-1">24h</div>
+      <div class="text-xs sm:text-sm text-gray-600 font-medium">Max Processing</div>
+    </div>
+    <div class="p-2 sm:p-4 bg-green-50/50 rounded-lg border border-green-100">
+      <div class="text-xl sm:text-3xl font-bold text-green-700 mb-1">100%</div>
+      <div class="text-xs sm:text-sm text-gray-600 font-medium">Verified</div>
+    </div>
+    <div class="p-2 sm:p-4 bg-green-50/50 rounded-lg border border-green-100">
+      <div class="text-xl sm:text-3xl font-bold text-green-700 mb-1">0</div>
+      <div class="text-xs sm:text-sm text-gray-600 font-medium">Fraud Cases</div>
+    </div>
+  </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- Enhanced Services Section -->
+<section class="py-16 px-6 bg-gradient-to-b from-gray-50 to-gray-100">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-12 opacity-0 animate-fade-in-up" style="animation-delay: 0.1s">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
+          Our <span class="gradient-text">Specialized</span> Solutions
+        </h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          Comprehensive geospatial services designed for professionals and property owners
+        </p>
+      </div>
+  
+      <div class="grid md:grid-cols-2 gap-8">
+        <!-- Card 1 - Land Administration -->
+        <div class="relative group h-96 rounded-xl overflow-hidden shadow-lg hover-zoom opacity-0 animate-fade-in-up" style="animation-delay: 0.2s">
+          <div class="absolute inset-0 bg-[url('/img/governor.webp')] bg-cover bg-center transition-all duration-500 group-hover:scale-105"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/40 to-transparent"></div>
+          <div class="absolute inset-0 flex flex-col justify-end p-8">
+            <div class="transform transition-all duration-500 group-hover:-translate-y-2">
+              <div class="w-12 h-12 mb-4 bg-primary-500 rounded-lg flex items-center justify-center text-white shadow-md">
+                <i class="fas fa-map-marked-alt text-xl"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-white mb-3">Land Administration</h2>
+              <p class="text-gray-300 mb-5 text-sm leading-relaxed">
+                Discover geospatial tools and datasets that support efficient land registration, cadastral mapping, and sustainable land use planning.
+              </p>
+              <button 
+                class="px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg shadow-md transition-all duration-300 flex items-center group-hover:bg-accent"
+                onclick="document.getElementById('services').scrollIntoView({ behavior: 'smooth' });"
+              >
+                Explore Services
+                <svg class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Card 2 - Survey and GIS -->
+        <div class="relative group h-96 rounded-xl overflow-hidden shadow-lg hover-zoom opacity-0 animate-fade-in-up" style="animation-delay: 0.3s">
+          <div class="absolute inset-0 bg-[url('img/survey.png')] bg-cover bg-center transition-all duration-500 group-hover:scale-105"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/40 to-transparent"></div>
+          <div class="absolute inset-0 flex flex-col justify-end p-8">
+            <div class="transform transition-all duration-500 group-hover:-translate-y-2">
+              <div class="w-12 h-12 mb-4 bg-secondary-500 rounded-lg flex items-center justify-center text-white shadow-md">
+                <i class="fas fa-ruler-combined text-xl"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-white mb-3">Survey and GIS</h2>
+              <p class="text-gray-300 mb-5 text-sm leading-relaxed">
+                Utilize spatial data, GIS software, and modern survey instruments to collect, analyze, and visualize geographic information.
+              </p>
+          
+                <a href="{% url 'registration_number' %}" class="inline-block px-5 py-2.5 bg-secondary-600 hover:bg-secondary-700 text-white text-sm font-medium rounded-lg shadow-md transition-all duration-300 group-hover:bg-secondary-700">
+                  Register Now
+                  <i class="fas fa-user-plus ml-2"></i>
+                </a>
+             
+            </div>
+          </div>
+        </div>
+  
+        <!-- Card 3 - Real Estate Agents -->
+        <div class="relative group h-96 rounded-xl overflow-hidden shadow-lg hover-zoom opacity-0 animate-fade-in-up" style="animation-delay: 0.4s">
+          <div class="absolute inset-0 bg-[url('/img/surveyor.jpg')] bg-cover bg-center transition-all duration-500 group-hover:scale-105"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/40 to-transparent"></div>
+          <div class="absolute inset-0 flex flex-col justify-end p-8">
+            <div class="transform transition-all duration-500 group-hover:-translate-y-2">
+              <div class="w-12 h-12 mb-4 bg-accent rounded-lg flex items-center justify-center text-white shadow-md">
+                <i class="fas fa-home text-xl"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-white mb-3">Real Estate Agents</h2>
+              <p class="text-gray-300 mb-5 text-sm leading-relaxed">
+                Access detailed cadastral and zoning maps for property evaluations. Essential tools for real estate professionals.
+              </p>
+              <a href="https://staging-landapps.enugugis.online/estate-agents/overview"  
+                 class="inline-block px-5 py-2.5 bg-accent hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow-md transition-all duration-300 group-hover:bg-green-700">
+                Agent Portal
+                <i class="fas fa-external-link-alt ml-2"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Card 4 - Property Inspection -->
+     
+<div class="relative group h-96 rounded-xl overflow-hidden shadow-lg hover-zoom opacity-0 animate-fade-in-up" style="animation-delay: 0.5s">
+    <div class="absolute inset-0 bg-[url('/img/Drone.jpg')] bg-cover bg-center transition-all duration-500 group-hover:scale-105"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/40 to-transparent"></div>
+    <div class="absolute inset-0 flex flex-col justify-end p-8">
+      <div class="transform transition-all duration-500 group-hover:-translate-y-2">
+        <div class="w-12 h-12 mb-4 bg-gray-800 rounded-lg flex items-center justify-center text-white shadow-md">
+            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 1.74.5 3.37 1.41 4.84L2 20l4.16-4.15C7.63 17.5 9.26 18 11 18c3.87 0 7-3.13 7-7s-3.13-7-7-7zm0 2c2.76 0 5 2.24 5 5s-2.24 5-5 5-5-2.24-5-5 2.24-5 5-5z"/>
+              </svg>  <!-- Fixed icon -->
+        </div>
+        <h2 class="text-2xl font-bold text-white mb-3">Property Inspection/Remote Sensing</h2>
+        <p class="text-gray-300 mb-5 text-sm leading-relaxed">
+          High-resolution imagery and terrain data for field inspection, environmental monitoring, and infrastructure analysis.
+        </p>
+        <button class="px-5 py-2.5 bg-gray-800 hover:bg-gray-900 text-white text-sm font-medium rounded-lg shadow-md transition-all duration-300 group-hover:bg-gray-900">
+          Learn More
+          <i class="fas fa-chevron-right ml-2"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white py-16 px-6">
+    <div class="max-w-7xl mx-auto text-center">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
+        Our <span class="gradient-text">Featured Services</span>
+      </h2>
+      <p class="text-gray-500 text-lg mt-2 max-w-2xl mx-auto">
+        Explore our key land-related services — designed to simplify registration, compliance, and ownership processes.
+      </p>
+  
+      <div class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Search Report -->
+        <div class="group border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-primary-300">
+          <div class="h-40 bg-[url('/img/search-report-img.webp')] bg-cover bg-center relative">
+            <div class="absolute inset-0 bg-primary-600/20 group-hover:bg-primary-600/10 transition-all duration-300"></div>
+          </div>
+          <div class="p-6">
+            <div class="w-12 h-12 -mt-14 mb-4 bg-white border-2 border-primary-100 text-primary-600 flex items-center justify-center rounded-full shadow-lg">
+              <i class="fas fa-file-alt text-lg"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 text-lg mb-2">Search Report</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">
+              Get detailed insights into ownership, title history, and legal status of land parcels for due diligence.
+            </p>
+            <div class="mt-4">
+              <a href="#" class="inline-flex items-center text-primary-600 text-sm font-medium hover:text-primary-800 transition-colors">
+                Learn more <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Ground Rent Bill -->
+        <div class="group border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-primary-300">
+          <div class="h-40 bg-[url('https://images.unsplash.com/photo-1604594849809-dfedbc827105?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80')] bg-cover bg-center relative">
+            <div class="absolute inset-0 bg-primary-600/20 group-hover:bg-primary-600/10 transition-all duration-300"></div>
+          </div>
+          <div class="p-6">
+            <div class="w-12 h-12 -mt-14 mb-4 bg-white border-2 border-primary-100 text-primary-600 flex items-center justify-center rounded-full shadow-lg">
+              <i class="fas fa-file-invoice-dollar text-lg"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 text-lg mb-2">Ground Rent Bill</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">
+              Access, view, and pay annual ground rent obligations to stay compliant and avoid penalties.
+            </p>
+            <div class="mt-4">
+              <a href="#" class="inline-flex items-center text-primary-600 text-sm font-medium hover:text-primary-800 transition-colors">
+                Learn more <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+  
+        <!-- New Registration -->
+        <div class="group border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-primary-300">
+          <div class="h-40 bg-[url('/img/registration-img.webp')] bg-cover bg-center relative">
+            <div class="absolute inset-0 bg-primary-600/20 group-hover:bg-primary-600/10 transition-all duration-300"></div>
+          </div>
+          <div class="p-6">
+            <div class="w-12 h-12 -mt-14 mb-4 bg-white border-2 border-primary-100 text-primary-600 flex items-center justify-center rounded-full shadow-lg">
+              <i class="fas fa-file-signature text-lg"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 text-lg mb-2">New Registration</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">
+              Register newly acquired land or property to secure title documents and establish legal ownership.
+            </p>
+            <div class="mt-4">
+              <a href="#" class="inline-flex items-center text-primary-600 text-sm font-medium hover:text-primary-800 transition-colors">
+                Learn more <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Recertification -->
+        <div class="group border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-primary-300">
+          <div class="h-40 bg-[url('/img/building-recertification-img.jpg')] bg-cover bg-center relative">
+            <div class="absolute inset-0 bg-primary-600/20 group-hover:bg-primary-600/10 transition-all duration-300"></div>
+          </div>
+          <div class="p-6">
+            <div class="w-12 h-12 -mt-14 mb-4 bg-white border-2 border-primary-100 text-primary-600 flex items-center justify-center rounded-full shadow-lg">
+              <i class="fas fa-sync-alt text-lg"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 text-lg mb-2">Recertification</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">
+              Renew certification of land documents to maintain compliance with current regulations.
+            </p>
+            <div class="mt-4">
+              <a href="#" class="inline-flex items-center text-primary-600 text-sm font-medium hover:text-primary-800 transition-colors">
+                Learn more <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Regularization -->
+        <div class="group border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-primary-300">
+          <div class="h-40 bg-[url('/img/Regularization-img.avif')] bg-cover bg-center relative">
+            <div class="absolute inset-0 bg-primary-600/20 group-hover:bg-primary-600/10 transition-all duration-300"></div>
+          </div>
+          <div class="p-6">
+            <div class="w-12 h-12 -mt-14 mb-4 bg-white border-2 border-primary-100 text-primary-600 flex items-center justify-center rounded-full shadow-lg">
+              <i class="fas fa-check-circle text-lg"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 text-lg mb-2">Regularization</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">
+              Formalize ownership of unregistered land or resolve title document irregularities.
+            </p>
+            <div class="mt-4">
+              <a href="#" class="inline-flex items-center text-primary-600 text-sm font-medium hover:text-primary-800 transition-colors">
+                Learn more <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Estate Unbundling -->
+        <div class="group border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-primary-300">
+          <div class="h-40 bg-[url('/img/estate-unbundling-img-2.jpeg')] bg-cover bg-center relative">
+            <div class="absolute inset-0 bg-primary-600/20 group-hover:bg-primary-600/10 transition-all duration-300"></div>
+          </div>
+          <div class="p-6">
+            <div class="w-12 h-12 -mt-14 mb-4 bg-white border-2 border-primary-100 text-primary-600 flex items-center justify-center rounded-full shadow-lg">
+              <i class="fas fa-project-diagram text-lg"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 text-lg mb-2">Estate Unbundling</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">
+              Divide large estate titles into smaller, independently registered plots for development.
+            </p>
+            <div class="mt-4">
+              <a href="#" class="inline-flex items-center text-primary-600 text-sm font-medium hover:text-primary-800 transition-colors">
+                Learn more <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Partial Surrender -->
+        <div class="group border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-primary-300">
+          <div class="h-40 bg-[url('/img/partial-surrender-img.webp')] bg-cover bg-center relative">
+            <div class="absolute inset-0 bg-primary-600/20 group-hover:bg-primary-600/10 transition-all duration-300"></div>
+          </div>
+          <div class="p-6">
+            <div class="w-12 h-12 -mt-14 mb-4 bg-white border-2 border-primary-100 text-primary-600 flex items-center justify-center rounded-full shadow-lg">
+              <i class="fas fa-share-square text-lg"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 text-lg mb-2">Partial Surrender/Merger</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">
+              Officially release portions of land title back to government for public use or re-planning.
+            </p>
+            <div class="mt-4">
+              <a href="#" class="inline-flex items-center text-primary-600 text-sm font-medium hover:text-primary-800 transition-colors">
+                Learn more <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Land Allocation -->
+        <div class="group border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 hover:border-primary-300">
+          <div class="h-40 bg-[url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80')] bg-cover bg-center relative">
+            <div class="absolute inset-0 bg-primary-600/20 group-hover:bg-primary-600/10 transition-all duration-300"></div>
+          </div>
+          <div class="p-6">
+            <div class="w-12 h-12 -mt-14 mb-4 bg-white border-2 border-primary-100 text-primary-600 flex items-center justify-center rounded-full shadow-lg">
+              <i class="fas fa-map-marked-alt text-lg"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 text-lg mb-2">Land Allocation</h3>
+            <p class="text-gray-600 text-sm leading-relaxed">
+              Apply for government-allocated plots through our transparent, merit-based system.
+            </p>
+            <div class="mt-4">
+              <a href="#" class="inline-flex items-center text-primary-600 text-sm font-medium hover:text-primary-800 transition-colors">
+                Learn more <i class="fas fa-chevron-right ml-1 text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- Enhanced Tailored Solutions Section -->
+<section class="bg-gradient-to-b from-gray-50 to-white py-16 px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
+          <span class="gradient-text">Tailored Solutions</span> For Every Stakeholder
+        </h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          Whether you're a property owner, developer, legal professional, or public institution—ENGIS has services built just for you.
+        </p>
+      </div>
+  
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- For Individuals -->
+        <div class="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
+          <div class="absolute inset-0 bg-gradient-to-br from-primary-50 to-white opacity-80 z-0"></div>
+          <div class="relative z-10 p-8">
+            <div class="w-14 h-14 mb-6 bg-gradient-to-r from-primary-100 to-primary-50 text-primary-700 flex items-center justify-center rounded-full shadow-md">
+              <i class="fas fa-user text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">For Individuals</h3>
+            <p class="text-gray-600 mb-5">Manage your personal land assets with ease.</p>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Verify ownership and get search reports</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Register newly acquired land</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Pay ground rent and check status</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Secure legal recognition</span>
+              </li>
+            </ul>
+       
+          </div>
+        </div>
+  
+        <!-- For Survey Professionals -->
+        <div class="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
+          <div class="absolute inset-0 bg-gradient-to-br from-secondary-50 to-white opacity-80 z-0"></div>
+          <div class="relative z-10 p-8">
+            <div class="w-14 h-14 mb-6 bg-gradient-to-r from-secondary-100 to-secondary-50 text-secondary-700 flex items-center justify-center rounded-full shadow-md">
+              <i class="fas fa-users text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">For Survey Professionals</h3>
+            <p class="text-gray-600 mb-5">Support your clients with reliable land data and status.</p>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Conduct land searches</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Submit applications</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Track multiple submissions</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Download certified documents</span>
+              </li>
+            </ul>
+          
+          </div>
+        </div>
+  
+        <!-- For Real Estate Developers -->
+        <div class="group relative bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100">
+          <div class="absolute inset-0 bg-gradient-to-br from-accent-50 to-white opacity-80 z-0"></div>
+          <div class="relative z-10 p-8">
+            <div class="w-14 h-14 mb-6 bg-gradient-to-r from-accent-100 to-accent-50 text-accent-700 flex items-center justify-center rounded-full shadow-md">
+              <i class="fas fa-cogs text-xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">For Real Estate Developers</h3>
+            <p class="text-gray-600 mb-5">Streamline bulk land management and allocation.</p>
+            <ul class="space-y-3">
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Apply for estate unbundling</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Regularize land holdings</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Monitor development titles</span>
+              </li>
+              <li class="flex items-start">
+                <svg class="w-5 h-5 text-green-500 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-gray-700">Access commercial land</span>
+              </li>
+            </ul>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Enhanced Static Services Overview Section -->
+<section class="bg-white py-16 px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3">
+          <span class="gradient-text">Essential Land Services</span>
+        </h2>
+        <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+          Streamlined solutions for all your land administration needs
+        </p>
+      </div>
+  
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Service Card 1 -->
+        <a href="https://staging.enugugis.online/application?id=fresh-registration"  
+           class="group block overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-primary-300">
+          <div class="relative overflow-hidden h-48">
+            <img src="img/Fresh_reg.avif" 
+                 alt="New Title Registration"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark/30 via-dark/10 to-transparent"></div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-center mb-3">
+              <div class="w-10 h-10 bg-primary-100 text-primary-600 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-file-signature"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900">New Title Registration</h3>
+            </div>
+            <p class="text-gray-600 mb-4">
+              Secure legal ownership of land or property within the state through official documentation of new land titles.
+            </p>
+            
+          </div>
+        </a>
+  
+        <!-- Service Card 2 -->
+        <a href="https://staging.enugugis.online/services" 
+           class="group block overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-primary-300">
+          <div class="relative overflow-hidden h-48">
+            <img src="img/Ground-bill.jpg" 
+                 alt="Ground Rent Bill"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark/30 via-dark/10 to-transparent"></div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-center mb-3">
+              <div class="w-10 h-10 bg-green-100 text-green-600 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-file-invoice-dollar"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900">Ground Rent Bill</h3>
+            </div>
+            <p class="text-gray-600 mb-4">
+              Process annual fees for land use and occupancy under leasehold arrangements with the government.
+            </p>
+          
+          </div>
+        </a>
+  
+        <!-- Service Card 3 -->
+        <a href="https://staging.enugugis.online/application?id=regularization"  
+           class="group block overflow-hidden rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 hover:border-primary-300">
+          <div class="relative overflow-hidden h-48">
+            <img src="img/regularization.jpg" 
+                 alt="Regularization"
+                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark/30 via-dark/10 to-transparent"></div>
+          </div>
+          <div class="p-6">
+            <div class="flex items-center mb-3">
+              <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center mr-3">
+                <i class="fas fa-check-circle"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900">Regularization</h3>
+            </div>
+            <p class="text-gray-600 mb-4">
+              Convert informal land holdings into legally recognized titles within government records.
+            </p>
+          
+          </div>
+        </a>
+      </div>
+  
+     
+    </div>
+  </section>
+
+
+  <!-- Enhanced Self-Service Kiosk Section -->
+<section class="py-16 bg-gradient-to-b from-gray-50 to-white">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+        <!-- Image Section (Left) -->
+        <div class="w-full lg:w-1/2 relative group">
+          <div class="relative overflow-hidden rounded-xl shadow-2xl">
+            <img src="img/kiosk-1.jpg" 
+                 alt="ENGIS Self-Service Kiosk"
+                 class="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-dark/30 via-dark/10 to-transparent"></div>
+          </div>
+          <div class="absolute -bottom-4 -right-4 bg-white px-4 py-2 rounded-lg shadow-md border border-gray-200">
+            <div class="flex items-center">
+              <div class="w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+              <span class="text-sm font-medium text-gray-700">24/7 Operational</span>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Content Section (Right) -->
+        <div class="w-full lg:w-1/2">
+          <div class="bg-white/80 backdrop-blur-sm p-1 rounded-full w-max mb-6">
+            <span class="text-xs font-semibold px-4 py-1.5 bg-primary-100 text-primary-700 rounded-full">
+              SELF-SERVICE PORTAL
+            </span>
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
+            <span class="gradient-text">ENGIS Kiosk</span>: Land Services Available <span class="text-primary-600">24/7</span>
+          </h2>
+          <p class="text-lg text-gray-600 mb-8 leading-relaxed">
+            Access all land administration services anytime, anywhere through our secure self-service kiosks. Designed for convenience without compromising security or functionality.
+          </p>
+  
+          <div class="space-y-5 mb-10">
+            <div class="flex items-start p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 transition-all hover:shadow-md">
+              <div class="flex-shrink-0 mt-0.5">
+                <div class="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <i class="fas fa-bolt text-sm"></i>
+                </div>
+              </div>
+              <div class="ml-4">
+                <h3 class="font-semibold text-gray-900 mb-1">Instant Access</h3>
+                <p class="text-gray-600 text-sm">Complete land transactions anytime without waiting in line at government offices</p>
+              </div>
+            </div>
+  
+            <div class="flex items-start p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 transition-all hover:shadow-md">
+              <div class="flex-shrink-0 mt-0.5">
+                <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <i class="fas fa-tasks text-sm"></i>
+                </div>
+              </div>
+              <div class="ml-4">
+                <h3 class="font-semibold text-gray-900 mb-1">Full Service Suite</h3>
+                <p class="text-gray-600 text-sm">From search reports to fresh registrations, all services at your fingertips</p>
+              </div>
+            </div>
+  
+            <div class="flex items-start p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 transition-all hover:shadow-md">
+              <div class="flex-shrink-0 mt-0.5">
+                <div class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <i class="fas fa-lock text-sm"></i>
+                </div>
+              </div>
+              <div class="ml-4">
+                <h3 class="font-semibold text-gray-900 mb-1">Secure Processing</h3>
+                <p class="text-gray-600 text-sm">Military-grade encryption protects your sensitive land documents</p>
+              </div>
+            </div>
+  
+            <div class="flex items-start p-4 bg-white rounded-xl border border-gray-200 hover:border-primary-300 transition-all hover:shadow-md">
+              <div class="flex-shrink-0 mt-0.5">
+                <div class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center shadow-sm">
+                  <i class="fas fa-wallet text-sm"></i>
+                </div>
+              </div>
+              <div class="ml-4">
+                <h3 class="font-semibold text-gray-900 mb-1">No Extra Costs</h3>
+                <p class="text-gray-600 text-sm">Same affordable government rates with no hidden fees</p>
+              </div>
+            </div>
+          </div>
+  
+          <div class="flex flex-col sm:flex-row gap-4">
+            <a href="#" class="flex-1 px-6 py-3.5 bg-gradient-to-r from-primary-600 to-accent text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all hover:from-primary-700 hover:to-accent-600 text-center">
+              <div class="flex items-center justify-center">
+                <i class="fas fa-map-marker-alt mr-2"></i>
+                Find a Kiosk Near You
+              </div>
+            </a>
+            <a href="https://www.youtube.com/" class="flex-1 px-6 py-3.5 border-2 border-primary-500 text-primary-600 font-medium rounded-lg hover:bg-primary-50 transition-colors text-center">
+              <div class="flex items-center justify-center">
+                <i class="fas fa-play-circle mr-2"></i>
+                Watch Demo Video
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+    <!-- Latest Updates Section -->
+<section class="bg-gray-50 py-16 px-6">
+    <div class="max-w-7xl mx-auto text-center">
+      <h2 class="text-3xl font-bold text-gray-800 mb-10">Discover the Latest at ENGIS</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        
+        <!-- Property Monitoring -->
+        <a href="#" class="group block bg-white rounded-xl shadow hover:shadow-2xl transition-transform transform hover:-translate-y-1 overflow-hidden">
+          <img src="img/service-1.avif" 
+               alt="Property Monitoring" 
+               class="w-full h-52 object-cover transition-transform duration-300 group-hover:scale-105">
+          <div class="p-6 text-left">
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">Property Monitoring</h3>
+            <p class="text-sm text-gray-600">
+              Proactively monitor your land assets with real-time alerts on ownership changes, encumbrances, or government notices. Prevent fraudulent transactions and unauthorized encroachments with our robust tracking system.
+            </p>
+          </div>
+        </a>
+  
+        <!-- Plot Survey Plan -->
+        <a href="{% url 'maps' %}" class="group block bg-white rounded-xl shadow hover:shadow-2xl transition-transform transform hover:-translate-y-1 overflow-hidden">
+          <img src="img/service-2.jpg" 
+               alt="Survey Planning" 
+               class="w-full h-52 object-cover transition-transform duration-300 group-hover:scale-105">
+          <div class="p-6 text-left">
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">Plot Survey Plan</h3>
+            <p class="text-sm text-gray-600">
+              Digitally submit and process land survey plans. Instantly validate survey coordinates against records to avoid overlaps or disputes before final approval.
+            </p>
+          </div>
+        </a>
+  
+        <!-- Track Your Lands -->
+        <a href="#" class="group block bg-white rounded-xl shadow hover:shadow-2xl transition-transform transform hover:-translate-y-1 overflow-hidden">
+          <img src="img/services-3.2.png" 
+               alt="Land Tracking" 
+               class="w-full h-52 object-cover transition-transform duration-300 group-hover:scale-105">
+          <div class="p-6 text-left">
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">Track Your Lands</h3>
+            <p class="text-sm text-gray-600">
+              Maintain a digital portfolio of all land holdings in Enugu State. View ownership documents, track applications, and get automated reminders for renewals and compliance.
+            </p>
+          </div>
+        </a>
+  
+      </div>
+    </div>
+  </section>
+  
+
+    <!-- How It Works -->
+    <section class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4 sm:px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Simple <span class="gradient-text">3-Step</span> Process
+          </h2>
+          <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+            Our streamlined workflow makes land administration effortless and transparent.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Step 1 -->
+          <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow opacity-0 animate-fade-in-up" style="animation-delay: 0.2s">
+            <div class="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 text-xl font-bold mb-4">
+              1
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Create Account</h3>
+            <p class="text-gray-600 mb-4">
+              Register for a free account in minutes. Verify your identity to unlock full platform access.
+            </p>
+            <div class="flex justify-center">
+              <div class="w-16 h-1 bg-primary-200 rounded-full"></div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow opacity-0 animate-fade-in-up" style="animation-delay: 0.4s">
+            <div class="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 text-xl font-bold mb-4">
+              2
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Select Service</h3>
+            <p class="text-gray-600 mb-4">
+              Choose from our comprehensive menu of land administration services tailored to your needs.
+            </p>
+            <div class="flex justify-center">
+              <div class="w-16 h-1 bg-primary-200 rounded-full"></div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow opacity-0 animate-fade-in-up" style="animation-delay: 0.6s">
+            <div class="w-14 h-14 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 text-xl font-bold mb-4">
+              3
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Track Progress</h3>
+            <p class="text-gray-600 mb-4">
+              Monitor your application status in real-time and receive notifications at each milestone.
+            </p>
+            <div class="flex justify-center">
+              <div class="w-16 h-1 bg-primary-200 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-12 text-center opacity-0 animate-fade-in-up" style="animation-delay: 0.8s">
+          <a href="{% url 'register' %}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-accent text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all">
+            Get Started Now
+            <svg class="w-4 h-4 ml-2" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    
+
+    <!-- CTA Section -->
+    <section class="py-16 bg-primary-600 text-white">
+      <div class="container mx-auto px-4 sm:px-6">
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-3xl md:text-4xl font-bold mb-6">
+            Ready to Experience Modern Land Management?
+          </h2>
+          <p class="text-xl text-primary-100 mb-8">
+            Join thousands of satisfied users who have simplified their land administration processes.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'register' %}" class="px-8 py-3 bg-white text-primary-700 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition-colors text-center">
+              Create Free Account
+            </a>
+            <a href="#" class="px-8 py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition-colors text-center">
+              Contact Support
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-gray-300 pt-16 pb-10">
+    <div class="container mx-auto px-4 sm:px-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+        <!-- Logo + About -->
+        <div>
+          <div class="flex items-center mb-4">
+            <img src="/img/engis_logo.png" class="h-10 mr-3" alt="ENGIS Logo">
+            <span class="text-xl font-bold text-white">ENGIS</span>
+          </div>
+          <p class="text-sm text-gray-400 mb-4">
+            Enugu State's premier digital land administration platform, bringing transparency and efficiency to property management.
+          </p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fab fa-twitter text-lg"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fab fa-facebook text-lg"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fab fa-linkedin text-lg"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <i class="fab fa-instagram text-lg"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h4 class="text-white font-semibold text-lg mb-4">Quick Links</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+            <li><a href="#services" class="text-gray-400 hover:text-white transition-colors">Services</a></li>
+            <li><a href="https://staging-payment.enugugis.online/" class="text-gray-400 hover:text-white transition-colors">Payments</a></li>
+            <li><a href="{% url 'homepage' %}" class="text-gray-400 hover:text-white transition-colors">Survey</a></li>
+            <li><a href="https://staging.enugugis.online/faqs" class="text-gray-400 hover:text-white transition-colors">FAQs</a></li>
+          </ul>
+        </div>
+
+        <!-- Services -->
+        <div>
+          <h4 class="text-white font-semibold text-lg mb-4">Services</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Search Report</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Ground Rent Bill</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Fresh Registration</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Recertification</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Regularization</a></li>
+          </ul>
+        </div>
+
+        <!-- Support -->
+        <div>
+          <h4 class="text-white font-semibold text-lg mb-4">Support</h4>
+          <ul class="space-y-2">
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Help Center</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">System Status</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Feedback</a></li>
+            <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Documentation</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div>
+          <h4 class="text-white font-semibold text-lg mb-4">Contact</h4>
+          <address class="not-italic text-gray-400 space-y-2">
+            <p class="flex items-start">
+              <i class="fas fa-map-marker-alt mt-1 mr-3 text-primary-400"></i>
+              <span>State Secretariat, Enugu, Nigeria</span>
+            </p>
+            <p class="flex items-center">
+              <i class="fas fa-phone-alt mr-3 text-primary-400"></i>
+              <span>+234 800 000 0000</span>
+            </p>
+            <p class="flex items-center">
+              <i class="fas fa-envelope mr-3 text-primary-400"></i>
+              <span>info@enugugis.online</span>
+            </p>
+          </address>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-sm text-gray-500 mb-4 md:mb-0">
+          &copy; 2025 Enugu State Geographical Information System. All rights reserved.
+        </p>
+        <div class="flex space-x-6">
+          <a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Privacy Policy</a>
+          <a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Terms of Service</a>
+          <a href="#" class="text-sm text-gray-500 hover:text-white transition-colors">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile menu toggle
+    document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+
+    // Mobile services toggle
+    document.getElementById('mobile-services-toggle').addEventListener('click', function() {
+      const menu = document.getElementById('mobile-services-menu');
+      const icon = document.getElementById('mobile-services-icon');
+      menu.classList.toggle('hidden');
+      icon.classList.toggle('rotate-180');
+    });
+
+    // Animate elements when they come into view
+    const animateOnScroll = () => {
+      const elements = document.querySelectorAll('.animate-fade-in-up');
+      elements.forEach(element => {
+        const elementPosition = element.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
+        
+        if (elementPosition < windowHeight - 100) {
+          element.style.opacity = '1';
+          element.classList.add('animate-fade-in-up');
+        }
+      });
+    };
+
+    // Initialize animations on load
+    window.addEventListener('load', animateOnScroll);
+    // Animate on scroll
+    window.addEventListener('scroll', animateOnScroll);
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          window.scrollTo({
+            top: target.offsetTop - 100,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // Header scroll effect
+    window.addEventListener('scroll', function() {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.classList.add('shadow-md');
+        header.classList.remove('py-3');
+        header.classList.add('py-2');
+      } else {
+        header.classList.remove('shadow-md');
+        header.classList.remove('py-2');
+        header.classList.add('py-3');
+      }
+    });
+
+    // Simple carousel functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const slides = document.querySelectorAll('.relative.h-full > div');
+        const indicators = document.querySelectorAll('.carousel-indicator');
+        let currentSlide = 0;
+        
+        function showSlide(index) {
+          slides.forEach((slide, i) => {
+            slide.classList.toggle('opacity-100', i === index);
+            slide.classList.toggle('opacity-0', i !== index);
+          });
+          
+          indicators.forEach((indicator, i) => {
+            indicator.classList.toggle('bg-yellow-300', i === index);
+            indicator.classList.toggle('bg-yellow-300/50', i !== index);
+          });
+        }
+        
+        function nextSlide() {
+          currentSlide = (currentSlide + 1) % slides.length;
+          showSlide(currentSlide);
+        }
+        
+        // Set up auto-rotation
+        let interval = setInterval(nextSlide, 5000);
+        
+        // Set up indicator clicks
+        indicators.forEach((indicator, index) => {
+          indicator.addEventListener('click', () => {
+            clearInterval(interval);
+            currentSlide = index;
+            showSlide(currentSlide);
+            interval = setInterval(nextSlide, 5000);
+          });
+        });
+        
+        // Pause on hover
+        const carousel = document.querySelector('section');
+        carousel.addEventListener('mouseenter', () => clearInterval(interval));
+        carousel.addEventListener('mouseleave', () => {
+          interval = setInterval(nextSlide, 5000);
+        });
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,1291 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="shortcut icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
+  <title>{% block title %}ENGIS{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <link rel="shortcut icon" href="{% static 'favicon.ico' %}" type="image/x-icon" />
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- Include Select2 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+
+<!-- Include jQuery (required by Select2) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Include Select2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<!-- Include Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+
+<!-- Google Maps API & L.Google Plugin -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+<script src="https://raruto.github.io/cdn/leaflet-google/0.0.3/leaflet-google.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}"></script>
+
+
+<!-- Leaflet Providers (for OSM) -->
+<script src="https://unpkg.com/leaflet-providers@1.13.0/leaflet-providers.js"></script>
+
+<!-- Leaflet Control Geocoder -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+
+<!-- Include Turf.js for convex hull calculation -->
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
+
+<!-- Include Leaflet Measure plugin assets in your base template or in the head -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-measure/dist/leaflet-measure.css" />
+<script src="https://cdn.jsdelivr.net/npm/leaflet-measure/dist/leaflet-measure.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
+<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+</head>
+<body class="bg-white font-sans leading-normal tracking-normal text-gray-800">
+
+<header class="bg-white shadow py-4">
+  <div class="container mx-auto flex justify-between items-center px-6">
+ <!-- Logo -->
+<a href="{% url 'homepage' %}" class="flex items-center space-x-3">
+  <img src="{% static 'images/engis_logo.png' %}" class="h-10" alt="ENGIS Logo">
+  <span class="text-xl font-bold text-gray-800">ENGIS</span>
+</a>
+
+
+<!-- Mobile Auth Buttons -->
+<div class="md:hidden flex items-center gap-3 relative" id="mobile-profile-wrapper">
+  {% if user.is_authenticated %}
+    <button id="mobile-profile-toggle" class="focus:outline-none flex items-center space-x-1">
+      {% if user.profile.profile_picture %}
+        <img src="{{ user.profile.profile_picture.url }}" class="h-9 w-9 rounded-full border-2 border-green-600 object-cover" alt="Profile">
+      {% else %}
+        <div class="h-9 w-9 rounded-full bg-purple-300 border-2 border-green-600 flex items-center justify-center text-sm text-white">
+          {{ user.profile.first_name|default:user.username|slice:":1" }}
+        </div>
+      {% endif %}
+      <svg class="w-4 h-4 text-gray-700" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M5.25 7.5L10 12.25L14.75 7.5H5.25Z"/>
+      </svg>
+    </button>
+
+    <!-- Dropdown menu -->
+    <div id="mobile-profile-menu" class="absolute top-full right-0 mt-2 w-44 bg-white border border-green-600 rounded-md shadow-lg hidden z-50">
+      <div class="px-4 py-2 text-sm font-medium text-gray-700 border-b border-green-200">Account</div>
+      <a href="{% url 'complete_profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">Profile</a>
+      <hr class="border-green-200 my-1">
+      <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</button>
+      </form>
+    </div>
+
+  {% else %}
+    <a href="{% url 'register' %}" class="bg-green-600 text-white text-xs font-medium px-3 py-1.5 rounded hover:bg-green-700">
+      Create Account
+    </a>
+    <a href="{% url 'login' %}" class="bg-green-100 text-green-700 text-xs font-medium px-3 py-1.5 rounded hover:bg-green-200">
+      Log in
+    </a>
+  {% endif %}
+
+
+
+
+     <!-- Mobile Menu Toggle -->
+    <button id="mobile-menu-toggle" class="md:hidden focus:outline-none">
+      <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+</div>
+
+    <!-- Desktop Nav -->
+    <nav class="hidden md:flex space-x-8 text-sm items-center">
+      <a href="{% url 'homepage' %}" class="hover:text-green-600">Home</a>
+
+      <!-- Services Dropdown -->
+      <div class="relative">
+        <button id="services-toggle" class="inline-flex items-center space-x-1 text-sm font-medium text-gray-700 hover:text-green-700 focus:outline-none">
+          <span>Services</span>
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M5.25 7.5L10 12.25L14.75 7.5H5.25Z"/>
+          </svg>
+        </button>
+<div id="services-menu" class="absolute hidden bg-white border border-gray-300 rounded-lg shadow-lg mt-2 w-64 z-50">
+  <ul class="text-sm text-gray-800">
+<li>
+  <a href="https://staging.enugugis.online/services/search-report/new"
+     class="block px-4 py-3 hover:bg-green-50 hover:text-green-700 border-b border-gray-200"
+    >
+    Search Report
+  </a>
+</li>
+
+  <li>
+  <a href="https://staging.enugugis.online/services"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+    Ground Rent Bill
+  </a>
+</li>
+<li>
+  <a href="https://staging.enugugis.online/application?id=fresh-registration"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+    New Title Registration
+  </a>
+</li>
+
+   <li>
+  <a href="https://staging.enugugis.online/application?id=recertification"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+>
+    Recertification
+  </a>
+</li>
+
+    <li>
+  <a href="https://staging.enugugis.online/application?id=regularization"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+   >
+    Regularization
+  </a>
+</li>
+<li>
+  <a href="https://staging.enugugis.online/application?id=estate-unbundling"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+    Estate Unbundling
+  </a>
+</li>
+
+<li>
+  <a href="https://staging.enugugis.online/application?id=partial-surrender"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+  >
+    Partial Surrender
+  </a>
+</li>
+
+   <li>
+  <a href="https://staging.enugugis.online/services/personal-land-application"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+     Land Allocation
+  </a>
+</li>
+    <li><a href="#" class="block px-4 py-3 hover:bg-green-50 hover:text-green-700">Property Monitoring</a></li>
+  </ul>
+</div>
+
+
+      </div>
+      
+
+      <a href="https://staging-payment.enugugis.online/" class="hover:text-green-600">Payments</a>
+    {% if request.user.is_authenticated and request.user.surveyor %}
+  <a href="{% url 'surveyors_dashboard' %}" class="hover:text-green-600">Survey</a>
+{% else %}
+  <a href="{% url 'registration_number' %}" class="hover:text-green-600">Survey</a>
+{% endif %}
+
+    
+      <a href="{% url 'history' %}" class="hover:text-green-600">History</a>
+       <a href="{% url 'maps' %}" class="hover:text-green-600">Maps</a>
+        <a href="{% url 'faqs' %}" class="hover:text-green-600">FAQs</a>
+    </nav>
+
+<div class="hidden md:flex items-center gap-4">
+  {% if user.is_authenticated %}
+    <!-- Profile Dropdown -->
+<div class="relative" id="profile-dropdown-wrapper">
+  <button id="profile-dropdown-toggle" class="flex items-center space-x-2 focus:outline-none">
+    {% if user.profile.profile_picture %}
+      <img src="{{ user.profile.profile_picture.url }}" alt="Profile" class="h-9 w-9 rounded-full border-2 border-green-600 object-cover">
+    {% else %}
+      <div class="h-9 w-9 rounded-full bg-purple-300 border-2 border-green-600 flex items-center justify-center text-sm text-white">
+        {{ user.profile.first_name|default:user.username|slice:":1" }}
+      </div>
+    {% endif %}
+    <svg class="h-4 w-4 text-gray-700 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M5.25 7.5L10 12.25L14.75 7.5H5.25Z"/>
+    </svg>
+  </button>
+  <div id="profile-dropdown-menu" class="absolute right-0 mt-2 w-44 bg-white border border-green-600 rounded-md shadow-lg hidden z-50">
+    <div class="px-4 py-2 text-sm font-medium text-gray-700 border-b border-green-200">Account</div>
+    <a href="{% url 'complete_profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">Profile</a>
+    <hr class="border-green-200 my-1">
+    <form method="POST" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">Logout</button>
+    </form>
+  </div>
+</div>
+
+
+  {% else %}
+    <a href="{% url 'register' %}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Create Account</a>
+    <a href="{% url 'login' %}" class="bg-green-100 text-green-600 px-4 py-2 rounded flex items-center">
+      <svg class="h-4 w-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 0114 0H3z"/>
+      </svg>
+      Log in
+    </a>
+  {% endif %}
+</div>
+
+  </div>
+
+  <!-- Mobile Nav -->
+  <div id="mobile-menu" class="hidden md:hidden px-6 mt-4 space-y-4">
+    <a href="{% url 'homepage' %}" class="block text-sm text-gray-700 hover:text-green-600 border-b border-gray-300">Home</a>
+
+    <div>
+      <button id="mobile-services-toggle" class="flex justify-between items-center w-full text-sm font-semibold text-gray-700 focus:outline-none border-b border-gray-200">
+        <span>Services</span>
+        <svg id="mobile-services-icon" class="w-4 h-4 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M5.25 7.5L10 12.25L14.75 7.5H5.25Z"/>
+        </svg>
+      </button>
+ <ul id="mobile-services-menu" class="hidden mt-2 border border-gray-300 rounded-lg overflow-hidden text-sm text-gray-800">
+<li>
+  <a href="https://staging.enugugis.online/services/search-report/new"
+     class="block px-4 py-3 hover:bg-green-50 hover:text-green-700 border-b border-gray-200"
+  >
+    Search Report
+  </a>
+</li>
+  <li>
+  <a href="https://staging.enugugis.online/services"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+    Ground Rent Bill
+  </a>
+</li>
+<li>
+  <a href="https://staging.enugugis.online/application?id=fresh-registration"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+    New Title Registration
+  </a>
+</li>
+
+  <li>
+  <a href="https://staging.enugugis.online/application?id=recertification"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+    >
+    Recertification
+  </a>
+</li>
+
+  <li>
+  <a href="https://staging.enugugis.online/application?id=regularization"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+    Regularization
+  </a>
+</li>
+
+<li>
+  <a href="https://staging.enugugis.online/application?id=estate-unbundling"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+    Estate Unbundling
+  </a>
+</li>
+
+<li>
+  <a href="https://staging.enugugis.online/application?id=partial-surrender"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+    Partial Surrender
+  </a>
+</li>
+
+   <li>
+  <a href="https://staging.enugugis.online/services/personal-land-application"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+     Land Allocation
+  </a>
+</li>
+  <li><a href="#" class="block px-4 py-3 hover:bg-green-50 hover:text-green-700">Property Monitoring</a></li>
+</ul>
+
+    </div>
+
+    <a href="#" class="block text-sm text-gray-700 hover:text-green-600 border-b border-gray-300">Payments</a>
+    <a href="{% url 'surveyors_dashboard' %}" class="block text-sm text-gray-700 hover:text-green-600 border-b border-gray-300">Survey</a>
+    <a href="{% url 'history' %}" class="block text-sm text-gray-700 hover:text-green-600 border-b border-gray-300">History</a>
+           <a href="{% url 'maps' %}" class="block text-sm text-gray-700 hover:text-green-600 border-b border-gray-300">Maps</a>
+        <a href="{% url 'faqs' %}" class="block text-sm text-gray-700 hover:text-green-600 ">FAQs</a>
+ {% if user.is_authenticated %}
+  <div class="border-t border-gray-200 pt-4">
+    <div class="flex items-center space-x-3">
+      {% if user.profile.profile_picture %}
+        <img src="{{ user.profile.profile_picture.url }}" class="h-10 w-10 rounded-full border border-green-500" alt="Profile">
+      {% else %}
+        <div class="h-10 w-10 rounded-full bg-purple-300 border border-green-600 flex items-center justify-center text-white">
+          {{ user.profile.first_name|default:user.username|slice:":1" }}
+        </div>
+      {% endif %}
+      <span class="font-medium text-gray-800">{{ user.profile.first_name }}</span>
+    </div>
+    <div class="mt-4 space-y-2">
+      <a href="{% url 'complete_profile' %}" class="block text-sm text-gray-700 hover:text-green-600">Profile</a>
+      <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="w-full text-left text-sm text-gray-700 hover:text-red-600">Logout</button>
+      </form>
+    </div>
+  </div>
+{% else %}
+
+{% endif %}
+
+  </div>
+</header>
+
+
+
+   <!-- IFRAME CONTAINER -->
+ <div id="embedded-frame-container"
+     class="w-full hidden relative">
+  <!-- Back button pinned top-left -->
+  <br >
+  <br >
+  <br >
+  <button
+    class="absolute top-4 left-4 bg-white text-gray-700 px-3 py-1 rounded shadow z-50 hover:bg-gray-100 transition">
+    ← Back
+  </button>
+
+  <iframe
+    id="embedded-frame"
+    src=""
+    class="w-full"
+    style="border:none; height:calc(100vh - 4rem);"
+    allowfullscreen>
+  </iframe>
+</div>
+
+ 
+
+
+  <!-- Main Content -->
+  <main id="page-content">
+    {% block content %}{% endblock %}
+
+    <div class="bg-green" style="margin-top: 2rem;background-color: #f0f4f8;">
+
+
+      <!-- Hero Section: Split Left (Text) / Right (Image) -->
+   
+   <section class="w-full bg-white py-6">
+     <div class="max-w-7xl mx-auto flex flex-col lg:flex-row rounded-xl overflow-hidden min-h-[32rem] shadow">
+       
+       <!-- Left: Text Block -->
+       <div class="bg-green-800 text-white flex flex-col justify-center px-8 py-12 w-full lg:w-2/5">
+         <div class="max-w-lg">
+           <h1 class="text-3xl md:text-4xl font-extrabold leading-tight">
+             Redefining Land Administration <span class="text-yellow-400">Excellence</span>
+   
+           </h1>
+           <p class="text-sm mt-4 text-white/80">
+             At ENGIS, we exist to solve what was once considered impossible. We focus on what matters most in land administration: security of ownership, accuracy of records, transparency of processes, and speed of service. <span class="text-yellow-400">TOMORROW IS HERE.</span>
+           </p>
+   
+           <!-- Search Form -->
+   
+   
+           <!-- Search Form -->
+            <a href="{% url 'maps' %}">
+           <div class="mt-6 flex max-w-md">
+             <span class="flex items-center text-xs sm:text-sm font-semibold text-white bg-green-600 px-4 py-2 rounded-l">
+               Check Your Property / Explore Enugu Properties
+             </span>
+              
+             <button class="bg-yellow-400 text-black px-4 py-2 rounded-r text-xs sm:text-sm font-semibold hover:bg-yellow-500">
+               Click
+             </button>
+           
+           </div>
+              </a>
+         </div>
+       </div>
+   
+       <!-- Right: Background Image -->
+       <div class="w-full lg:w-3/5 bg-cover bg-center"
+            style="background-image: url('/img/enugustate-img.jpg');"> <!--{% static 'images/homepage_banner.png' %}-->
+         <div class="h-full min-h-[32rem]"></div>
+       </div>
+   
+     </div>
+   </section>
+   
+   
+   
+   
+   
+   <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12 bg-gray-100 border border-gray-300 rounded-lg shadow-md" style="max-width: 900px;">
+   
+   <!-- Video Section (Left) -->
+   <div class="relative w-full lg:w-3/5 h-80 rounded-lg overflow-hidden shadow-lg">
+     <!-- Thumbnail -->
+     <div id="video-thumbnail"
+          class="absolute inset-0 bg-center bg-cover z-20"
+          style="background-image: url({% static 'img/engis_logo.png' %});">
+       <div class="absolute inset-0 bg-black bg-opacity-30 flex justify-center items-center">
+         <div class="w-16 h-16 bg-green-600 rounded-full flex justify-center items-center text-white text-3xl select-none">
+           ▶️
+         </div>
+       </div>
+     </div>
+   
+     <!-- Video -->
+     <video id="featured-video"
+            class="w-full h-full hidden"
+            controls
+            preload="metadata"
+            autoplay
+            muted
+            playsinline>
+       <source src="{% static 'vid/ENGIS-1.mp4' %}" type="video/mp4">
+       Your browser does not support HTML5 video.
+     </video>
+   </div>
+   
+   <script>
+     document.addEventListener('DOMContentLoaded', function() {
+       const thumb = document.getElementById('video-thumbnail');
+       const video = document.getElementById('featured-video');
+   
+       // hide thumbnail, show video, and attempt play
+       thumb.classList.add('hidden');
+       video.classList.remove('hidden');
+       video.play().catch(err => {
+         // autofplay might be blocked, so fallback to showing controls
+         console.warn('Autoplay failed:', err);
+       });
+     });
+   </script>
+   
+     <!-- Text Section (Right) -->
+     <div class="w-full lg:w-2/5 p-6 flex flex-col justify-center">
+       <h2 class="text-2xl font-semibold mb-4">Aerial View Using Drone for Inspection</h2>
+       <p class="mb-3 text-gray-700">Drones offer a detailed aerial view for land and property inspection, allowing efficient monitoring of large areas from above.</p>
+       <p class="text-gray-700">This technology helps detect issues like soil erosion, unauthorized construction, and vegetation conditions, supporting accurate and timely property management decisions.</p>
+     </div>
+   
+   </div>
+   
+  
+   <!-- Value Proposition -->
+   <section class="bg-gray-50 py-12 px-6">
+     <div class="max-w-5xl mx-auto text-center">
+       <p class="text-lg text-gray-800 leading-relaxed tracking-wide font-medium max-w-3xl mx-auto mt-4">
+         <span class="block text-2xl font-semibold text-green-700 mb-2"><span class="text-green-600">✔️</span>FAST. <span class="text-green-600">✔️</span>SECURE. <span class="text-green-600">✔️</span>VERIFIED.</span>
+         Our groundbreaking system guarantees that <span class="font-semibold text-gray-900">verified lands</span> are processed and delivered within just <span class="text-green-700 font-bold">8 to 24 hours</span>. By integrating advanced <span class="italic text-gray-800">geospatial intelligence</span>, <span class="italic text-gray-800">holographic</span> and <span class="italic text-gray-800">anti-counterfeit security features</span>, and a seamless digital land management platform, <span class="font-bold text-gray-900">ENGIS</span> sets a new benchmark for trust, efficiency, and accountability in land governance.
+       </p>
+       
+     </div>
+   </section>
+   
+   
+   <!-- Services Section -->
+   <section class="py-12 px-6 bg-gray-50">
+     <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-6">
+   
+   <!-- Card 1 -->
+   <div class="h-96 bg-cover bg-center rounded-lg overflow-hidden relative"
+        style="background-image: url('{% static 'images/map_search2.png' %}')">  <!--{% static 'images/map_search2.png' %}-->
+     <div class="absolute inset-0 flex flex-col justify-end p-6 text-white">
+       <div class="bg-black bg-opacity-60 p-4 rounded">
+         <h2 class="text-2xl font-bold mb-2">Land Administration</h2>
+         <p class="text-sm mb-4">
+           Discover geospatial tools and datasets that support efficient land registration, cadastral mapping, and sustainable land use planning for better governance.
+         </p>
+     <button
+     class="bg-green-600 px-5 py-2 rounded text-white text-sm hover:bg-green-700 w-max"
+     type="button"
+     
+   >
+     Select
+   </button>
+   
+       </div>
+     </div>
+   </div>
+   
+   
+   
+   <!-- Card 2 -->
+   <div class="h-96 bg-cover bg-center rounded-lg overflow-hidden relative"
+        style="background-image: url('{% static 'images/survey.png' %}')"> <!--{% static 'images/survey.png' %}-->
+     <div class="absolute inset-0 flex flex-col justify-end p-6 text-white">
+       <div class="bg-black bg-opacity-60 p-4 rounded">
+         <h2 class="text-2xl font-bold mb-2">Survey and GIS</h2>
+         <p class="text-sm mb-4">
+           Utilize spatial data, GIS software, and modern survey instruments to collect, analyze, and visualize geographic information for precise decision-making.
+         </p>
+   
+   {% if request.user.is_authenticated and request.user.surveyor %}
+     <a href="{% url 'surveyors_dashboard' %}"
+        class="bg-green-600 px-5 py-2 rounded text-white text-sm hover:bg-green-700 w-max">
+       Select
+     </a>
+   {% else %}
+     <a href="{% url 'registration_number' %}"
+        class="bg-green-600 px-5 py-2 rounded text-white text-sm hover:bg-green-700 w-max">
+       Select
+     </a>
+   {% endif %}
+   
+       </div>
+     </div>
+   </div>
+   
+   <!-- Card 3 -->
+   <div class="h-96 bg-cover bg-center rounded-lg overflow-hidden relative"
+        style="background-image: url('{% static '/img/surveyor.jpg' %}')">  <!--{% static 'images/map_search2.png' %}-->
+     <div class="absolute inset-0 flex flex-col justify-end p-6 text-white">
+       <div class="bg-black bg-opacity-60 p-4 rounded">
+         <h2 class="text-2xl font-bold mb-2">Real Estate Agents</h2>
+         <p class="text-sm mb-4">
+           Access detailed cadastral, topographic, and zoning maps for property evaluations and planning. Ideal for professionals conducting land surveys or managing real estate transactions.
+         </p>
+                              <a href="https://staging-landapps.enugugis.online/estate-agents/overview">
+          <button
+       class="bg-green-600 px-5 py-2 rounded text-white text-sm hover:bg-green-700 w-max"
+       >
+       Select
+     </button>
+     </a>
+       </div>
+     </div>
+   </div>
+   
+   
+   <!-- Card 4 -->
+   <div class="h-96 bg-cover bg-center rounded-lg overflow-hidden relative"
+        style="background-image: url('/img/Drone.jpg')"> <!--{% static 'images/survey.png' %}-->
+     <div class="absolute inset-0 flex flex-col justify-end p-6 text-white">
+       <div class="bg-black bg-opacity-60 p-4 rounded">
+         <h2 class="text-2xl font-bold mb-2">Property Inspection/Remote Sensing</h2>
+         <p class="text-sm mb-4">
+           Explore high-resolution imagery, terrain data, and remote sensing tools for field inspection, environmental monitoring, and infrastructure analysis.
+         </p>
+         <button class="bg-green-600 px-5 py-2 rounded text-white text-sm hover:bg-green-700 w-max">
+           Select
+         </button>
+       </div>
+     </div>
+   </div>
+   
+   
+     </div>
+   </section>
+   
+   <!-- Services Section -->
+   
+   
+   {% load static %}
+   
+   <!-- Featured Services Section -->
+   <section class="bg-white py-16 px-6" id="services">
+     <div class="max-w-7xl mx-auto text-center">
+       <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">
+         Our Featured Services
+       </h2>
+       <p class="text-gray-500 text-base mt-2 max-w-2xl mx-auto">
+         Explore our key land-related services — designed to simplify registration,
+         compliance, and ownership processes for individuals, businesses, and developers.
+       </p>
+   
+       <!-- Services Grid -->
+       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+   <a href="https://staging.enugugis.online/services/search-report/new">
+   
+         <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full relative group hover:border-green-200">
+   
+     <div class="absolute inset-0 rounded-lg group-hover:shadow-[0_0_15px_5px_rgba(167,243,208,0.6)] pointer-events-none transition-all duration-300"></div>
+     <div class="h-32 bg-green-50 flex items-center justify-center overflow-hidden">
+       <img src="{% static 'img/search-report-img.webp' %}"
+            alt="Search Report"
+            class="w-full h-full object-cover" />
+     </div>
+     <div class="p-6 flex-1">
+       <h3 class="font-bold text-white uppercase text-sm bg-green-600 rounded px-4 py-2 inline-block">
+         Search Report
+       </h3>
+       <p class="text-gray-600 text-sm mt-2">
+         Get detailed insights into the ownership, title history, and legal status
+         of a parcel of land. Essential for due diligence before land transactions.
+       </p>
+     </div>
+     </div>
+   </a>
+   
+   
+         <!-- Ground Rent Bill -->
+         <a href="https://staging.enugugis.online/services">
+         <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full relative group hover:border-green-200">
+           <div class="absolute inset-0 rounded-lg group-hover:shadow-[0_0_15px_5px_rgba(167,243,208,0.6)] pointer-events-none transition-all duration-300"></div>
+           <div class="h-32 bg-green-50 flex items-center justify-center overflow-hidden">
+             <img src="{% static 'img/Ground-rent-img.webp' %}"
+                  alt="Ground Rent Bill"
+                  class="w-full h-full object-cover" />
+           </div>
+           <div class="p-6 flex-1">
+             <h3 class="font-bold text-white uppercase text-sm bg-green-600 rounded px-4 py-2 inline-block">
+               Ground Rent Bill
+             </h3>
+             <p class="text-gray-600 text-sm mt-2">
+               Easily access, view, and pay your annual ground rent obligations.
+               Stay compliant and avoid penalties with timely payments.
+             </p>
+           </div>
+         </div>
+         </a>
+   
+   
+   
+         <!-- New Registration -->
+               <a href="https://staging.enugugis.online/application?id=fresh-registration">
+         <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full relative group hover:border-green-200">
+           <div class="absolute inset-0 rounded-lg group-hover:shadow-[0_0_15px_5px_rgba(167,243,208,0.6)] pointer-events-none transition-all duration-300"></div>
+           <div class="h-32 bg-green-50 flex items-center justify-center overflow-hidden">
+             <img src="{% static 'img/registration-img.webp' %}"
+                  alt="New Registration"
+                  class="w-full h-full object-cover" />
+           </div>
+           <div class="p-6 flex-1">
+           
+             <h3 class="font-bold text-white uppercase text-sm bg-green-600 rounded px-4 py-2 inline-block">
+               New Registration
+             </h3>
+             <p class="text-gray-600 text-sm mt-2">
+               Register a newly acquired land or property with the Enugu State Government.
+               Secure your title documents and establish legal ownership.
+             </p>
+           </div>
+         </div>
+         </a>
+   
+   
+         <!-- Recertification -->
+                     <a href="https://staging.enugugis.online/application?id=recertification">
+         <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full relative group hover:border-green-200">
+           <div class="absolute inset-0 rounded-lg group-hover:shadow-[0_0_15px_5px_rgba(167,243,208,0.6)] pointer-events-none transition-all duration-300"></div>
+           <div class="h-32 bg-green-50 flex items-center justify-center overflow-hidden">
+             <img src="{% static 'img/building-recertification-img.jpg' %}"
+                  alt="Recertification"
+                  class="w-full h-full object-cover" />
+           </div>
+           <div class="p-6 flex-1">
+             <h3 class="font-bold text-white uppercase text-sm bg-green-600 rounded px-4 py-2 inline-block">
+               Recertification
+             </h3>
+             <p class="text-gray-600 text-sm mt-2">
+               Renew the certification of your land documents to stay in compliance
+               with current regulations and ensure continued legal recognition.
+             </p>
+           </div>
+         </div>
+       </a>
+   
+   
+         <!-- Regularization -->
+                    <a href="https://staging.enugugis.online/application?id=regularization">
+         <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full relative group hover:border-green-200">
+           <div class="absolute inset-0 rounded-lg group-hover:shadow-[0_0_15px_5px_rgba(167,243,208,0.6)] pointer-events-none transition-all duration-300"></div>
+           <div class="h-32 bg-green-50 flex items-center justify-center overflow-hidden">
+             <img src="{% static 'img/Regularization-img.avif' %}"
+                  alt="Regularization"
+                  class="w-full h-full object-cover" />
+           </div>
+           <div class="p-6 flex-1">
+             <h3 class="font-bold text-white uppercase text-sm bg-green-600 rounded px-4 py-2 inline-block">
+               Regularization
+             </h3>
+             <p class="text-gray-600 text-sm mt-2">
+               Formalize ownership of unregistered land or resolve irregularities
+               in title documents. A crucial step toward secure land tenure.
+             </p>
+           </div>
+         </div>
+       </a>
+         <!-- Estate Unbundling -->
+                    <a href="https://staging.enugugis.online/application?id=estate-unbundling">
+         <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full relative group hover:border-green-200">
+           <div class="absolute inset-0 rounded-lg group-hover:shadow-[0_0_15px_5px_rgba(167,243,208,0.6)] pointer-events-none transition-all duration-300"></div>
+           <div class="h-32 bg-green-50 flex items-center justify-center overflow-hidden">
+             <img src="{% static 'img/estate-unbundling-img-2.jpeg' %}"
+                  alt="Estate Unbundling"
+                  class="w-full h-full object-cover" />
+           </div>
+           <div class="p-6 flex-1">
+             <h3 class="font-bold text-white uppercase text-sm bg-green-600 rounded px-4 py-2 inline-block">
+               Estate Unbundling
+             </h3>
+             <p class="text-gray-600 text-sm mt-2">
+               Break down large estate titles into smaller, independently registered plots.
+               Ideal for property developers and large estate managers.
+             </p>
+           </div>
+         </div>
+       </a>
+   
+   
+         <!-- Partial Surrender -->
+                          <a href="https://staging.enugugis.online/application?id=partial-surrender">
+         <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full relative group hover:border-green-200">
+           <div class="absolute inset-0 rounded-lg group-hover:shadow-[0_0_15px_5px_rgba(167,243,208,0.6)] pointer-events-none transition-all duration-300"></div>
+           <div class="h-32 bg-green-50 flex items-center justify-center overflow-hidden">
+             <img src="{% static 'img/partial-surrender-img.webp' %}"
+                  alt="Partial Surrender"
+                  class="w-full h-full object-cover" />
+           </div>
+           <div class="p-6 flex-1">
+             <h3 class="font-bold text-white uppercase text-sm bg-green-600 rounded px-4 py-2 inline-block">
+               Partial Surrender/Merger
+             </h3>
+             <p class="text-gray-600 text-sm mt-2">
+               Officially release a portion of your land title back to the original
+               grantor, while retaining the remaining portion.
+             </p>
+           </div>
+         </div>
+     </a>
+         <!-- Land Allocation -->
+                          <a href="https://staging.enugugis.online/services/personal-land-application">
+         <div class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full relative group hover:border-green-200">
+           <div class="absolute inset-0 rounded-lg group-hover:shadow-[0_0_15px_5px_rgba(167,243,208,0.6)] pointer-events-none transition-all duration-300"></div>
+           <div class="h-32 bg-green-50 flex items-center justify-center overflow-hidden">
+             <img src="{% static 'img/land-allocation-img.avif' %}"
+                  alt="Land Allocation"
+                  class="w-full h-full object-cover" />
+           </div>
+           <div class="p-6 flex-1">
+             <h3 class="font-bold text-white uppercase text-sm bg-green-600 rounded px-4 py-2 inline-block">
+               Land Allocation
+             </h3>
+             <p class="text-gray-600 text-sm mt-2">
+               Apply for government-allocated plots through a transparent, merit-based system.
+               Suitable for residential, commercial, or agricultural use.
+             </p>
+           </div>
+         </div>
+     </a>
+       </div>
+     </div>
+   </section>
+   
+   
+   
+   <!-- Tailored Solutions Section -->
+   <section class="bg-white py-16 px-6">
+     <div class="max-w-7xl mx-auto text-center">
+       <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900">Tailored Solutions for Every Stakeholder</h2>
+       <p class="text-gray-500 mt-2 max-w-3xl mx-auto">
+         Whether you're a property owner, developer, legal professional, or public institution—ENGIS has services built just for you.
+       </p>
+   
+       <!-- Cards -->
+       <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 text-left">
+         
+         <!-- For Individuals -->
+         <div class="border border-gray-200 rounded-xl p-6 bg-gray-50 hover:shadow">
+           <div class="w-10 h-10 mb-4 bg-green-100 text-green-700 flex items-center justify-center rounded-full">
+             <i class="fas fa-user"></i>
+           </div>
+           <h3 class="text-lg font-bold text-gray-800 uppercase mb-1">For Individuals</h3>
+           <p class="text-sm text-gray-600 mb-4">Manage your personal land assets with ease.</p>
+           <ul class="text-sm text-gray-700 space-y-2">
+             <li>✔️ Verify ownership and get search reports</li>
+             <li>✔️ Register newly acquired land</li>
+             <li>✔️ Pay ground rent and check recertification status</li>
+             <li>✔️ Secure legal recognition for undocumented land</li>
+           </ul>
+         </div>
+   
+         <!-- For Survey Professionals -->
+         <div class="border border-gray-200 rounded-xl p-6 bg-gray-50 hover:shadow">
+           <div class="w-10 h-10 mb-4 bg-green-100 text-green-700 flex items-center justify-center rounded-full">
+             <i class="fas fa-users"></i>
+           </div>
+           <h3 class="text-lg font-bold text-gray-800 uppercase mb-1">For Survey Professionals</h3>
+           <p class="text-sm text-gray-600 mb-4">Support your clients with reliable land data and status.</p>
+           <ul class="text-sm text-gray-700 space-y-2">
+             <li>✔️ Conduct land searches and title verifications</li>
+             <li>✔️ Submit applications on behalf of landowners</li>
+             <li>✔️ Track multiple submissions from a centralized dashboard</li>
+             <li>✔️ Download certified documents</li>
+           </ul>
+         </div>
+   
+         <!-- For Real Estate Developers -->
+         <div class="border border-gray-200 rounded-xl p-6 bg-gray-50 hover:shadow">
+           <div class="w-10 h-10 mb-4 bg-green-100 text-green-700 flex items-center justify-center rounded-full">
+             <i class="fas fa-cogs"></i>
+           </div>
+           <h3 class="text-lg font-bold text-gray-800 uppercase mb-1">For Real Estate Developers</h3>
+           <p class="text-sm text-gray-600 mb-4">Streamline bulk land management and allocation.</p>
+           <ul class="text-sm text-gray-700 space-y-2">
+             <li>✔️ Apply for estate unbundling</li>
+             <li>✔️ Regularize and document large-scale land holdings</li>
+             <li>✔️ Monitor development-related land titles</li>
+             <li>✔️ Access land for commercial projects via allocation</li>
+           </ul>
+         </div>
+   
+         
+   
+       </div>
+     </div>
+   </section>
+   
+   <!-- Static Services Overview Section -->
+   {% load static %}
+   
+   <!-- Static Services Overview Section -->
+   <section class="bg-white py-12 px-6">
+     <div class="max-w-7xl mx-auto grid md:grid-cols-3 gap-6">
+   
+       <!-- Service Card 1 -->
+                  <a href="https://staging.enugugis.online/application?id=fresh-registration">
+       <div>
+         <img src="{% static 'img/Fresh_reg.avif' %}"
+              alt="Service 1"
+              class="rounded-lg mb-4" >
+         <h3 class="font-semibold text-lg text-gray-900 mb-2">📝 New Title Registration</h3>
+         <p class="text-sm text-gray-700">
+           This is the first step toward securing legal ownership of a land or property within the state.
+           This process involves the official documentation of a new land title that has not been previously
+           registered in the government's land registry.
+         </p>
+       </div>
+       </a>
+   
+       <!-- Service Card 2 -->
+             <a href="https://staging.enugugis.online/services">
+       <div>
+         <img src="{% static 'img/Ground-bill.jpg' %}"
+              alt="Service 2"
+              class="rounded-lg mb-4" >
+         <h3 class="font-semibold text-lg text-gray-900 mb-2">💰 Ground Rent Bill</h3>
+         <p class="text-sm text-gray-700">
+           Ease of processing annual fee payable by land owners to the government for the continued use and
+           occupancy of their allocated land. It is a legal obligation tied to land ownership under leasehold arrangements.
+         </p>
+       </div>
+       </a>
+   
+       <!-- Service Card 3 -->
+           <!-- Regularization -->
+                    <a href="https://staging.enugugis.online/application?id=regularization">
+       <div>
+         <img src="{% static 'img/regularization.jpg' %}"
+              alt="Service 3"
+              class="rounded-lg mb-4">
+         <h3 class="font-semibold text-lg text-gray-900 mb-2">🏡 Regularization</h3>
+         <p class="text-sm text-gray-700">
+           Convert your informal or unapproved land holdings into legally recognized titles within government
+           records. It is designed for individuals or organizations occupying land without formal documentation
+           or allocation.
+         </p>
+       </div>
+       </a>
+   
+     </div>
+   </section>
+   
+   <!-- Self-Service Kiosk Section -->
+   <section class="py-16 bg-white">
+     <div class="max-w-7xl mx-auto px-6 flex flex-col lg:flex-row items-center gap-12">
+       <!-- Left: Image -->
+       <div class="w-full lg:w-1/2">
+         <img src="{% static 'img/kiosk-1.jpg' %}"
+              alt="ENGIS Self-Service Kiosk"
+              class="rounded-xl shadow-lg w-full h-auto">
+       </div>
+   
+       <!-- Right: Kiosk -->
+       <div class="w-full lg:w-1/2">
+         <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-6">
+           The ENGIS Self-Service Kiosk: Your 24/7 Land Service Portal
+         </h2>
+         <p class="text-lg text-gray-600 mb-6">
+           Beyond mobile services, the ENGIS Self-Service Kiosk gives you full access to all land services
+           in one convenient location. Designed for simplicity and efficiency, our kiosks provide:
+         </p>
+         <ul class="space-y-4 mb-8">
+           <li class="flex items-start">
+             <div class="flex-shrink-0 mt-1">
+               <div class="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center">
+                 <i class="fas fa-check text-xs"></i>
+               </div>
+             </div>
+             <p class="ml-3 text-gray-600">
+               <span class="font-semibold">Instant Access:</span> Complete land transactions anytime without waiting in line at government offices
+             </p>
+           </li>
+           <li class="flex items-start">
+             <div class="flex-shrink-0 mt-1">
+               <div class="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center">
+                 <i class="fas fa-check text-xs"></i>
+               </div>
+             </div>
+             <p class="ml-3 text-gray-600">
+               <span class="font-semibold">Full Service Suite:</span> From search reports to fresh registrations, all services available at your fingertips
+             </p>
+           </li>
+           <li class="flex items-start">
+             <div class="flex-shrink-0 mt-1">
+               <div class="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center">
+                 <i class="fas fa-check text-xs"></i>
+               </div>
+             </div>
+             <p class="ml-3 text-gray-600">
+               <span class="font-semibold">Secure Processing:</span> Military-grade encryption protects your sensitive land documents and personal data
+             </p>
+           </li>
+           <li class="flex items-start">
+             <div class="flex-shrink-0 mt-1">
+               <div class="w-6 h-6 bg-green-100 text-green-700 rounded-full flex items-center justify-center">
+                 <i class="fas fa-check text-xs"></i>
+               </div>
+             </div>
+             <p class="ml-3 text-gray-600">
+               <span class="font-semibold">No Extra Costs:</span> Same affordable government rates with no service charges or hidden fees
+             </p>
+           </li>
+         </ul>
+         <div class="flex flex-col sm:flex-row gap-4">
+           <a href="#"
+              class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium text-center">
+             Find a Kiosk Near You
+           </a>
+           <a href="https://www.youtube.com/"
+              class="border border-green-600 text-green-600 hover:bg-green-50 px-6 py-3 rounded-lg font-medium text-center">
+             Watch Demo Video
+           </a>
+         </div>
+       </div>
+     </div>
+   </section>
+   
+   <!-- Latest Updates Section -->
+   <section class="bg-gray-50 py-12 px-6">
+     <div class="max-w-7xl mx-auto">
+       <h2 class="text-2xl font-bold mb-6">Discover the latest at ENGIS</h2>
+       <div class="grid md:grid-cols-3 gap-6">
+         <!-- Property Monitoring -->
+         <div class="transition-all duration-300 hover:shadow-lg rounded-lg p-4">
+           <img src="{% static 'img/service-1.avif' %}"
+                class="rounded-lg mb-2 w-full h-48 object-cover"
+                alt="Property Monitoring">
+           <h3 class="font-semibold text-lg mb-2">Property Monitoring</h3>
+           <p class="text-sm text-gray-600">
+             Proactively monitor your land assets with real-time alerts on ownership changes,
+             encumbrances, or government notices. Our comprehensive tracking system helps prevent
+             fraudulent transactions and unauthorized encroachments on your property.
+           </p>
+         </div>
+   
+         <!-- Plot Survey Plan -->
+          <a href="{% url 'maps' %}">
+         <div class="transition-all duration-300 hover:shadow-lg rounded-lg p-4">
+           <img src="{% static 'img/service-2.jpg' %}"
+                class="rounded-lg mb-2 w-full h-48 object-cover"
+                alt="Survey Planning">
+               
+           <h3 class="font-semibold text-lg mb-2">Plot Survey Plan</h3>
+          
+           <p class="text-sm text-gray-600">
+             Digitally submit and process your land survey plans with our streamlined system.
+             Get instant validation of survey coordinates against existing records to prevent overlaps
+             or boundary disputes before final approval and registration.
+           </p>
+         </div>
+    </a>
+         <!-- Track Your Lands -->
+         <div class="transition-all duration-300 hover:shadow-lg rounded-lg p-4">
+           <img src="{% static 'img/services-3.2.png' %}"
+                class="rounded-lg mb-2 w-full h-48 object-cover"
+                alt="Land Tracking">
+           <h3 class="font-semibold text-lg mb-2">Track Your Lands</h3>
+           <p class="text-sm text-gray-600">
+             Maintain a centralized digital portfolio of all your land holdings across Enugu State.
+             Access ownership documents, payment history, and application statuses in one dashboard
+             with automated reminders for renewals and compliance deadlines.
+           </p>
+         </div>
+       </div>
+     </div>
+   </section>
+   
+   
+   
+     </div>
+   
+    <script>
+   
+   // video
+   const thumbnail = document.getElementById('video-thumbnail');
+   const video = document.getElementById('featured-video');
+   
+   thumbnail.addEventListener('click', () => {
+     thumbnail.style.display = 'none';   // Hide thumbnail
+     video.style.display = 'block';      // Show video
+     video.play();                       // Start playing video
+   });
+   
+   
+   
+     </script>
+     <script>
+     function embedUrl(url) {
+       // hide the normal page content
+       document.getElementById('page-content').classList.add('hidden');
+       // show the iframe container
+       const container = document.getElementById('embedded-frame-container');
+       container.classList.remove('hidden');
+       // load the iframe
+       document.getElementById('embedded-frame').src = url;
+       // scroll parent window back to top
+       window.scrollTo(0, 0);
+       return false;
+     }
+   </script>
+  </main>
+
+<footer class="bg-gray-900 text-gray-300 text-sm pt-12 pb-10">
+  <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
+
+    <!-- Logo + Branding -->
+    <div class="col-span-1 flex flex-col sm:flex-row items-start sm:items-upper space-x-0 sm:space-x-4">
+      <img src="{% static 'images/engis_logo.png' %}" alt="ENGIS Logo" class="h-14 w-14 object-contain mb-2 sm:mb-0">
+      <div class="text-white font-semibold leading-tight text-base sm:text-sm">
+        Enugu Geographical<br class="hidden sm:block">Information System
+      </div>
+    </div>
+
+    <!-- Links -->
+    <div>
+      <h4 class="text-white font-semibold mb-3">LINKS</h4>
+      <ul class="space-y-2">
+        <li><a href="#" class="hover:underline">Home</a></li>
+        <li><a href="#" class="hover:underline">Services</a></li>
+        <li><a href="#" class="hover:underline">Payment</a></li>
+        <li><a href="#" class="hover:underline">About Us</a></li>
+      </ul>
+    </div>
+
+    <!-- Services -->
+    <div>
+      <h4 class="text-white font-semibold mb-3">SERVICES</h4>
+      <ul class="space-y-2">
+        <li><a href="#" class="hover:underline">Land Allocation</a></li>
+        <li><a href="#" class="hover:underline">Fresh Registration</a></li>
+        <li>
+  <a href="https://staging.enugugis.online/application?id=regularization"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+    Regularization
+  </a>
+</li>
+
+       <li>
+  <a href="https://staging.enugugis.online/application?id=recertification"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+    Recertification
+  </a>
+</li>
+        <li>
+  <a href="https://staging.enugugis.online/application?id=estate-unbundling"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+    Estate Unbundling
+  </a>
+</li>
+
+        <li>
+  <a href="https://staging.enugugis.online/application?id=partial-surrender"
+     class="block px-4 py-3 border-b border-gray-200 hover:bg-green-50 hover:text-green-700"
+     >
+    Partial Surrender
+  </a>
+</li>
+
+      </ul>
+    </div>
+
+    <!-- Help & Support -->
+    <div>
+      <h4 class="text-white font-semibold mb-3">HELP & SUPPORT</h4>
+      <ul class="space-y-2">
+        <li><a href="#" class="hover:underline">Contact Us</a></li>
+        <li><a href="#" class="hover:underline">Customer Support</a></li>
+        <li><a href="#" class="hover:underline">Security Center</a></li>
+      </ul>
+    </div>
+
+    <!-- Social Media -->
+    <div>
+      <h4 class="text-white font-semibold mb-3">SOCIAL MEDIA</h4>
+      <ul class="space-y-2">
+        <li><a href="#" class="hover:underline">Twitter</a></li>
+        <li><a href="#" class="hover:underline">LinkedIn</a></li>
+        <li><a href="#" class="hover:underline">Facebook</a></li>
+        <li><a href="#" class="hover:underline">Instagram</a></li>
+        <li><a href="#" class="hover:underline">Youtube</a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="mt-10 border-t border-gray-700 pt-6 text-sm text-gray-400 px-6 max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+    <p class="text-center md:text-left">&copy; 2024, ENGIS. All Rights Reserved.</p>
+    <div class="flex space-x-4">
+      <a href="#" class="hover:underline">Privacy Policy</a>
+      <a href="#" class="hover:underline">Terms and Condition</a>
+      <a href="#" class="hover:underline">Cookie Policy</a>
+    </div>
+  </div>
+</footer>
+
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenuToggle && mobileMenu) {
+      mobileMenuToggle.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+
+    /* const servicesToggle = document.getElementById('services-toggle');
+    const servicesMenu = document.getElementById('services-menu');
+    if (servicesToggle && servicesMenu) {
+      let isOpen = false;
+      servicesToggle.addEventListener('click', () => {
+        isOpen = !isOpen;
+        servicesMenu.classList.toggle('hidden', !isOpen);
+      });
+      document.addEventListener('click', (e) => {
+        if (!servicesToggle.contains(e.target) && !servicesMenu.contains(e.target)) {
+          servicesMenu.classList.add('hidden');
+          isOpen = false;
+        } 
+      });
+    }*/
+
+    const mobileServicesToggle = document.getElementById('mobile-services-toggle');
+    const mobileServicesMenu = document.getElementById('mobile-services-menu');
+    const mobileServicesIcon = document.getElementById('mobile-services-icon');
+
+    if (mobileServicesToggle && mobileServicesMenu && mobileServicesIcon) {
+      mobileServicesToggle.addEventListener('click', () => {
+        mobileServicesMenu.classList.toggle('hidden');
+        mobileServicesIcon.classList.toggle('rotate-180');
+      });
+    }
+  });
+
+
+
+      // Profile dropdown toggle
+    const profileToggle = document.getElementById('profile-dropdown-toggle');
+    const profileMenu = document.getElementById('profile-dropdown-menu');
+    const profileWrapper = document.getElementById('profile-dropdown-wrapper');
+
+    if (profileToggle && profileMenu && profileWrapper) {
+      let profileOpen = false;
+      profileToggle.addEventListener('click', () => {
+        profileOpen = !profileOpen;
+        profileMenu.classList.toggle('hidden', !profileOpen);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!profileWrapper.contains(e.target)) {
+          profileMenu.classList.add('hidden');
+          profileOpen = false;
+        }
+      });
+    }
+
+// Mobile profile dropdown toggle
+const mobileProfileToggle = document.getElementById('mobile-profile-toggle');
+const mobileProfileMenu = document.getElementById('mobile-profile-menu');
+const mobileProfileWrapper = document.getElementById('mobile-profile-wrapper');
+
+if (mobileProfileToggle && mobileProfileMenu && mobileProfileWrapper) {
+  let mobileProfileOpen = false;
+
+  mobileProfileToggle.addEventListener('click', () => {
+    mobileProfileOpen = !mobileProfileOpen;
+    mobileProfileMenu.classList.toggle('hidden', !mobileProfileOpen);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!mobileProfileWrapper.contains(e.target)) {
+      mobileProfileMenu.classList.add('hidden');
+      mobileProfileOpen = false;
+    }
+  });
+}
+
+</script>
+<script>
+  // toggle the menu
+  document.getElementById('services-toggle').addEventListener('click', function(e) {
+    e.stopPropagation();
+    document.getElementById('services-menu').classList.toggle('hidden');
+  });
+
+  // hide whenever you click anywhere outside
+  document.addEventListener('click', function() {
+    document.getElementById('services-menu').classList.add('hidden');
+  });
+
+  // AND: hide it when you click any item inside
+  document.querySelectorAll('#services-menu a').forEach(function(link) {
+    link.addEventListener('click', function() {
+      document.getElementById('services-menu').classList.add('hidden');
+    });
+  });
+
+  // prevent clicks inside the menu from bubbling up and immediately hiding it
+  document.getElementById('services-menu').addEventListener('click', function(e) {
+    e.stopPropagation();
+  });
+</script>
+
+
+</body>
+</html>
